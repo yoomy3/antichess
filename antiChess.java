@@ -1,4 +1,4 @@
-public class antiChess {
+public class AntiChess {
 	public static void main(String arg[]){
 		// create instances
 

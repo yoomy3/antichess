@@ -1,6 +1,10 @@
-public class board {
+public class Board {
 	// private variables
 
-	// 
-	void makeMove(board board)
+	// make a move, update the board
+	void makeMove(Board board) {}
+
+	// list all possible moves from the current state
+	// Vector<Board> possibleMoves() {}
+	void possibleMoves() {}
 }
