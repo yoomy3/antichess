@@ -7,31 +7,22 @@ import antiChess.piece.Piece;
 
 public class Board {
 	// private variables
-<<<<<<< HEAD
 	private Piece[][] pieces; // 8x8 board
 	private Color player; // either WHITE/BLACK
-	
-	public Board() {}
-	
-	// copy constructore;
-	public Board(Board another) {}
-	 
-=======
-	Piece[8][8] mainBoard;
-	int player; // 0 - black, 1 - white
 	boolean forcedMove;
 	
 	boolean isCaptured;
 	int fiftyMoveCount;
 
 	boolean isCastled;
-
-	// constructor
-	Board() {
+	
+	public Board() {
 		// initialize 32 pieces
 	}
+	
+	// copy constructore;
+	public Board(Board another) {}
 
->>>>>>> refs/remotes/yoomy3/master
 	// make a move, update the board
 	void makeMove(Board board) {
 	}
