@@ -5,6 +5,7 @@ public class MoveAnnotation {
 	private Point fromPoint;
 	private Point toPoint;
 	private Promotion promotion;
+	private boolean claimDraw; // whether the player wants to claim the draw
 
 	// Pawn promotion
 	public enum Promotion {
@@ -12,11 +13,17 @@ public class MoveAnnotation {
 	}
 
 	public MoveAnnotation(String move) throws Exception {
+		getClaimDraw(move);
 		getFromPoint(move);
 		getToPoint(move);
 		getPromotion(move);
 	}
 
+	// get whether player claims the draw
+	private void getClaimDraw(String move) {
+		claimDraw = (move.contains("1/2-1/2") && (move.length() > 10));
+	}
+	
 	// get from point
 	private void getFromPoint(String move) throws Exception {
 		int fromX = move.charAt(0) - 'a';
@@ -79,9 +86,14 @@ public class MoveAnnotation {
 	Promotion getPromotion() {
 		return promotion;
 	}
-
+	
+	boolean getClaimDraw() {
+		return claimDraw;
+	}
+	
 	// debug msg
 	public void print() {
-		System.out.println("fromPoint: " + fromPoint + " , toPoint: " + toPoint + " , prommotion: " + promotion);
+		System.out.println("fromPoint: " + fromPoint + " , toPoint: " + toPoint + " , prommotion: " + promotion
+				+ " , claimDraw: " + claimDraw);
 	}
 }
