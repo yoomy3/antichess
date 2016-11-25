@@ -7,7 +7,7 @@ import antiChess.piece.Piece;
 import antiChess.piece.BishopPiece;
 import antiChess.piece.KingPiece;
 import antiChess.piece.KnightPiece;
-import antiChess.piece.PrawnPiece;
+import antiChess.piece.PawnPiece;
 import antiChess.piece.QueenPiece;
 import antiChess.piece.RookPiece;
 
@@ -17,7 +17,7 @@ import antiChess.piece.RookPiece;
  * 1. Material score: each remaining material (P,N,B,R,Q,K) is given a score
  * 2. Position score: each position (on [8][8] board) for each material  will have a score from WHITE player's perspective
  * 3. Mobility score: this calculates how many possible moves are available on the board
- * 4. Pattern score: doubled/isolated/passed prawn pieces will be considered as special patterns for this engine
+ * 4. Pattern score: doubled/isolated/passed pawn pieces will be considered as special patterns for this engine
  * 
  */
 public class Prune {
@@ -25,7 +25,7 @@ public class Prune {
 	static private int depth = 5;
 	
 	// material scores
-	static private int prawnPiece = 100;
+	static private int pawnPiece = 100;
 	static private int knightPiece = 320;
 	static private int bishopPiece = 330;
 	static private int rookPiece = 500;
@@ -36,10 +36,10 @@ public class Prune {
 	static private int mobilityWeight = 10;
 	
 	// pattern weight
-	static private int prawnWeight = 50;
+	static private int pawnWeight = 50;
 	
 	// position scores (all scores are based from the lower player(WHITE) perspective
-	static private int[][] prawnPosition = new int[][] {
+	static private int[][] pawnPosition = new int[][] {
 		{0,  0,  0,  0,  0,  0,  0,  0},
 		{50, 50, 50, 50, 50, 50, 50, 50},
 		{10, 10, 20, 30, 30, 20, 10, 10},
@@ -188,8 +188,8 @@ public class Prune {
 						score += evaluateSingleMaterialPosition(kingPiece, kingPosition, i, j, isWhite);
 					} else if (curPiece instanceof KnightPiece) {
 						score += evaluateSingleMaterialPosition(knightPiece, knightPosition, i, j, isWhite);
-					} else if (curPiece instanceof PrawnPiece) {
-						score += evaluateSingleMaterialPosition(prawnPiece, prawnPosition, i, j, isWhite);
+					} else if (curPiece instanceof PawnPiece) {
+						score += evaluateSingleMaterialPosition(pawnPiece, pawnPosition, i, j, isWhite);
 					} else if (curPiece instanceof QueenPiece) {
 						score += evaluateSingleMaterialPosition(queenPiece, queenPosition, i, j, isWhite);
 					} else if (curPiece instanceof RookPiece) {
@@ -206,53 +206,53 @@ public class Prune {
 		return mobilityWeight * board.getPossibleMoves().size();
 	}
 	
-	// count the number of prawns on specific file for the current player
-	int countPrawn(int file, Piece[][] pieces, Color curPlayer) {
-		int prawnCount = 0;
+	// count the number of pawns on specific file for the current player
+	int countPawn(int file, Piece[][] pieces, Color curPlayer) {
+		int pawnCount = 0;
 		for (int i=0; i<8; i++) {
 			Piece piece = pieces[i][file];
-			if ((piece instanceof PrawnPiece) && (piece.getPlayer().equals(curPlayer))){
-				prawnCount++;
+			if ((piece instanceof PawnPiece) && (piece.getPlayer().equals(curPlayer))){
+				pawnCount++;
 			}
 		}
-		return prawnCount;
+		return pawnCount;
 	}
 	
 	/**
-	 * evaluate scores for prawn patterns (doubled + isolated + passed) with formula:
-	 * score = prawnWeight * (passed - isolate - doubled)
+	 * evaluate scores for pawn patterns (doubled + isolated + passed) with formula:
+	 * score = pawnWeight * (passed - isolate - doubled)
 	 */
-	int evaluatePrawnPattern(Board board) {
+	int evaluatePawnPattern(Board board) {
 		Color curPlayer = board.getPlayer();
 		Color opponent = getOpponent(curPlayer);
 		Piece[][] pieces = board.getPieces();
 		int score = 0;
 		
 		for (int i=0; i<8; i++) {
-			int curPlayerPrawn = countPrawn(i, pieces, curPlayer);
-			int opponentPrawn = countPrawn(i, pieces, opponent);
-			if (curPlayerPrawn > 1) {
-				score -= curPlayerPrawn; // doubled prawns
-			} else if ((curPlayerPrawn > 0) && (opponentPrawn == 0)) {
-				score += curPlayerPrawn; // passed prawns
-			} else if ((curPlayerPrawn > 0) && (i == 0)) { // check isolated for 1st file
-				int nextPrawn = countPrawn(1, pieces, curPlayer);
-				if (nextPrawn == 0) score -= curPlayerPrawn;
-			} else if ((curPlayerPrawn > 0) && (i == 7)) { // check isolated for last file
-				int nextPrawn = countPrawn(6, pieces, curPlayer);
-				if (nextPrawn == 0) score -= curPlayerPrawn;
-			} else if (curPlayerPrawn > 0){ // check isolated for general file
-				int adjacentPrawn = countPrawn(i-1, pieces, curPlayer) + countPrawn(i+1, pieces, curPlayer);
-				if (adjacentPrawn == 0) score -= curPlayerPrawn;
+			int curPlayerPawn = countPawn(i, pieces, curPlayer);
+			int opponentPawn = countPawn(i, pieces, opponent);
+			if (curPlayerPawn > 1) {
+				score -= curPlayerPawn; // doubled pawns
+			} else if ((curPlayerPawn > 0) && (opponentPawn == 0)) {
+				score += curPlayerPawn; // passed pawns
+			} else if ((curPlayerPawn > 0) && (i == 0)) { // check isolated for 1st file
+				int nextPawn = countPawn(1, pieces, curPlayer);
+				if (nextPawn == 0) score -= curPlayerPawn;
+			} else if ((curPlayerPawn > 0) && (i == 7)) { // check isolated for last file
+				int nextPawn = countPawn(6, pieces, curPlayer);
+				if (nextPawn == 0) score -= curPlayerPawn;
+			} else if (curPlayerPawn > 0){ // check isolated for general file
+				int adjacentPawn = countPawn(i-1, pieces, curPlayer) + countPawn(i+1, pieces, curPlayer);
+				if (adjacentPawn == 0) score -= curPlayerPawn;
 			}
 		}
-		return prawnWeight * score;
+		return pawnWeight * score;
 	}
 	
-	// return pattern evaluation (this one only considers prawns)
+	// return pattern evaluation (this one only considers pawns)
 	int evaluatePattern(Board board) {
 		int score = 0;
-		score += evaluatePrawnPattern(board);
+		score += evaluatePawnPattern(board);
 		return score;
 	}
 	
