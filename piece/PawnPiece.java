@@ -4,16 +4,16 @@ import java.awt.Color;
 import java.util.ArrayList;
 import antiChess.MoveAnnotation;
 
-public class BishopPiece extends Piece{
+public class PawnPiece extends Piece {
 
-	public BishopPiece(int x, int y, Color color) {
+	public PawnPiece(int x, int y, Color color) {
 		super(x, y, color);
 	}
 
-	public BishopPiece(Piece copy) {
+	public PawnPiece(Piece copy) {
 		super(copy);
 	}
-
+	
 	@Override
 	public ArrayList<MoveAnnotation> getPossibleMoves() {
 		// TODO: write this

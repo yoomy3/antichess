@@ -109,7 +109,7 @@ public class Prune {
 	public Prune() {}
 
 	// Alpha-Beta pruning
-	MoveAnnotation getBestMove(Board board, ArrayList<MoveAnnotation> moves) {
+	MoveAnnotation getBestMove(Board board, ArrayList<MoveAnnotation> moves) throws Exception {
 		int bestScore = Integer.MIN_VALUE, score;
 		MoveAnnotation bestMove = null;
 		
@@ -126,13 +126,13 @@ public class Prune {
 	}
 
 	// Alpha-Beta pruning for max
-	int alphaBetaMax(Board board, int alpha, int beta, int depthleft) {
+	int alphaBetaMax(Board board, int alpha, int beta, int depthleft) throws Exception {
 		int score;
 		if (depthleft == 0) return evaluate(board); // evaluate at leaf node
 		
 		// run local BFS to traverse all child boards
 		for (MoveAnnotation move : board.getPossibleMoves()) {
-			Board childBoard = new Board(board).takeMove(move);;
+			Board childBoard = new Board(board).takeMove(move);
 			score = alphaBetaMin(childBoard, alpha, beta, depthleft - 1);
 			if (score >= beta)
 				return beta; // fail hard beta-cutoff
@@ -143,7 +143,7 @@ public class Prune {
 	}
 
 	// Alpha-Beta pruning for min
-	int alphaBetaMin(Board board, int alpha, int beta, int depthleft) {
+	int alphaBetaMin(Board board, int alpha, int beta, int depthleft) throws Exception {
 		int score;
 		if (depthleft == 0) return evaluate(board); // evaluate at leaf node
 		
@@ -177,23 +177,23 @@ public class Prune {
 		boolean isWhite = (curPlayer.equals(Color.WHITE));
 		
 		Piece[][] pieces = board.getPieces();
-		for (int i=0; i<8; i++) {
-			for (int j=0; j<8; j++) {
-				Piece curPiece = pieces[i][j];
+		for (int r=0; r<8; r++) {
+			for (int c=0; c<8; c++) {
+				Piece curPiece = pieces[r][c];
 				Color piecePlayer = curPiece.getPlayer();
 				if (piecePlayer == curPlayer) {
 					if (curPiece instanceof BishopPiece) {
-						score += evaluateSingleMaterialPosition(bishopPiece, bishopPosition, i, j, isWhite);
+						score += evaluateSingleMaterialPosition(bishopPiece, bishopPosition, r, c, isWhite);
 					} else if (curPiece instanceof KingPiece) {
-						score += evaluateSingleMaterialPosition(kingPiece, kingPosition, i, j, isWhite);
+						score += evaluateSingleMaterialPosition(kingPiece, kingPosition, r, c, isWhite);
 					} else if (curPiece instanceof KnightPiece) {
-						score += evaluateSingleMaterialPosition(knightPiece, knightPosition, i, j, isWhite);
+						score += evaluateSingleMaterialPosition(knightPiece, knightPosition, r, c, isWhite);
 					} else if (curPiece instanceof PawnPiece) {
-						score += evaluateSingleMaterialPosition(pawnPiece, pawnPosition, i, j, isWhite);
+						score += evaluateSingleMaterialPosition(pawnPiece, pawnPosition, r, c, isWhite);
 					} else if (curPiece instanceof QueenPiece) {
-						score += evaluateSingleMaterialPosition(queenPiece, queenPosition, i, j, isWhite);
+						score += evaluateSingleMaterialPosition(queenPiece, queenPosition, r, c, isWhite);
 					} else if (curPiece instanceof RookPiece) {
-						score += evaluateSingleMaterialPosition(rookPiece, rookPosition, i, j, isWhite);
+						score += evaluateSingleMaterialPosition(rookPiece, rookPosition, r, c, isWhite);
 					}
 				}
 			}
@@ -202,7 +202,7 @@ public class Prune {
 	}
 	
 	// return mobility score
-	int evaluateMobility(Board board) {
+	int evaluateMobility(Board board) throws Exception {
 		return mobilityWeight * board.getPossibleMoves().size();
 	}
 	
@@ -257,7 +257,7 @@ public class Prune {
 	}
 	
 	// evaluate the board score
-	int evaluate(Board board) {
+	int evaluate(Board board) throws Exception {
 		int score = 0;
 		
 		score += evaluateMaterialPosition(board);

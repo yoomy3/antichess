@@ -2,6 +2,7 @@ package antiChess;
 import java.awt.Point;
 
 public class MoveAnnotation {
+	private String move;
 	private Point fromPoint;
 	private Point toPoint;
 	private Promotion promotion;
@@ -13,6 +14,7 @@ public class MoveAnnotation {
 	}
 
 	public MoveAnnotation(String move) throws Exception {
+		this.move = move;
 		getClaimDraw(move);
 		getFromPoint(move);
 		getToPoint(move);
@@ -75,6 +77,10 @@ public class MoveAnnotation {
 	}
 
 	// getter section
+	String getMoveString() {
+		return move;
+	}
+	
 	Point getFromPoint() {
 		return fromPoint;
 	}
@@ -93,7 +99,7 @@ public class MoveAnnotation {
 	
 	// debug msg
 	public void print() {
-		System.out.println("fromPoint: " + fromPoint + " , toPoint: " + toPoint + " , prommotion: " + promotion
+		System.out.println("move: " + move + "fromPoint: " + fromPoint + " , toPoint: " + toPoint + " , prommotion: " + promotion
 				+ " , claimDraw: " + claimDraw);
 	}
 }
