@@ -9,10 +9,12 @@ public class Board {
 	// private variables
 	private Piece[][] pieces; // 8x8 board
 	private Color player; // either WHITE/BLACK
-	boolean isWhite;
+	private Color winner; // TODO: set up winner when finished
+	boolean isWhite; 
 	
 	boolean enPassant;
 	boolean isCaptured;
+	private boolean gameFinished; // TODO: set up game finished when finished
 
 	int fiftyMoveCount;
 
@@ -115,6 +117,10 @@ public class Board {
 
 	public Color getPlayer() { return player; }
 
+	public Color getWinner() { return winner; }
+	
+	public boolean isGameFinished() { return gameFinished; }
+	
 	public void printBoard() {
 		// TODO: print the current state
 		return;
