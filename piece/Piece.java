@@ -31,6 +31,12 @@ public class Piece {
 		return new ArrayList<MoveAnnotation>();
 	}
 
+	// empty base function
+	// TODO: implement inherited functions
+	public ArrayList<MoveAnnotation> getCaptureMoves() {
+		return new ArrayList<MoveAnnotation>();
+	}
+
 	// getters
 	public int getX() { return x; }
 

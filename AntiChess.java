@@ -21,7 +21,7 @@ public class AntiChess {
 	
 	// set up player from input
 	private static void getPlayer(String side) {
-		if (side.equals("WHITE") || side.equals("white") || side.equals("White")) {
+		if (side.toLowerCase().equals("white")) {
 			chosenPlayer = Color.WHITE;
 			opponentPlayer = Color.BLACK;
 		} else {

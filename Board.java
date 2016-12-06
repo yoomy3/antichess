@@ -9,29 +9,48 @@ import antiChess.piece.*;
 
 public class Board {
 	// private variables
-	private Piece[][] pieces; // 8x8 board
-	private Color player; // either WHITE/BLACK
-	private Color winner; // TODO: set up winner when finished
+	Piece[][] pieces; // 8x8 board
+	Color player; // either WHITE/BLACK
+	Color winner; // TODO: set up winner when finished
 	boolean isWhite; 
 	
 	boolean enPassant;
-	boolean isCaptured;
 	boolean gameFinished; // TODO: set up game finished when finished
 
 	int fiftyMoveCount;
 
-	private Castling castling;
+	Castling castling;
 	boolean isCastled;
 	
 	boolean checked;
 	boolean checkMate;
+
+	// TODO: add hash table to check threefold repetition
 
 	// King/Queen side castling
 	private enum Castling {
 		NONE, KING, QUEEN
 	}
 
-	// QUESTION: How do we know who's turn it is? -> handling En Passant
+	// copy constructor;
+	public Board(Board anotherBoard) {
+		pieces = new Piece[8][8];
+		for (int r=0; r<8; r++) {
+			for (int c=0; c<8; c++) {
+				pieces[r][c] = new Piece(anotherBoard.pieces[r][c]);
+			}
+		}
+		player = anotherBoard.player;
+		winner = anotherBoard.winner;
+		isWhite = anotherBoard.isWhite;
+		enPassant = anotherBoard.enPassant;
+		gameFinished = anotherBoard.gameFinished;
+		fiftyMoveCount = anotherBoard.fiftyMoveCount;
+		castling = anotherBoard.castling;
+		isCastled = anotherBoard.isCastled;
+		checked = anotherBoard.checked;
+		checkMate = anotherBoard.checkMate;
+	}
 
 	public Board(String color) throws Exception {
 		// decide which side I am playing
@@ -48,73 +67,127 @@ public class Board {
 
 		castling = Castling.NONE;
 	}
-	
-	// copy constructor;
-	public Board(Board anotherBoard) {
-		// TODO: write this
-	}
 
 	// empty default constructore;
 	public Board() {}
 	
 	// make a move, update the board
 	public Board takeMove(MoveAnnotation move) {
-		// TODO: who's piece is moving?
+		Point fromPoint = move.getFromPoint();
+		Point toPoint = move.getToPoint();
+		
+		// who's piece is moving?
+		Color movingPlayer = pieces[fromPoint.y][fromPoint.x].getPlayer();
+		
+		// see if a piece is captured
+		if (pieces[toPoint.y][toPoint.x] != null) {
+			fiftyMoveCount = 0;
+		} else {
+			fiftyMoveCount++;
+		}
 
-		// TODO: check enPassant
+		// TODO: castling? -> check move is one of (e1g1, e1c1, e8g8, e8c8)
 
-		// TODO: see if a piece is captured
+		// TODO: check EnPassant
 
-		// TODO: check conditions
-			// castling? -> check move is one of (e1g1, e1c1, e8g8, e8c8)
-			// checked?
-			// checkMate?
+		pieces[toPoint.y][toPoint.x] = pieces[fromPoint.y][fromPoint.x];
+		pieces[fromPoint.y][fromPoint.x] = null;
 
-		return new Board();
+		return this;
 	}
 		
 	// list all possible moves from the current state
+	// it's our turn!
 	ArrayList<MoveAnnotation> getPossibleMoves() throws Exception {
 		ArrayList<MoveAnnotation> possibleMoves = new ArrayList<MoveAnnotation>();
+		
+		// checked?
+		ArrayList<MoveAnnotation> possibleAttacks = new ArrayList<MoveAnnotation>();
 		for (int r=0; r<8; r++) {
 			for (int c=0; c<8; c++) {
 				Piece piece = pieces[r][c];
 				if(piece != null && piece.getPlayer().equals(player)) {
-					ArrayList<MoveAnnotation> curMoves = piece.getPossibleMoves();
-					possibleMoves.addAll(curMoves);
+					possibleAttacks.addAll(piece.getCaptureMoves());
 				}
 			}
 		}
+		for (MoveAnnotation move : possibleAttacks) {
+			Point capturePoint = move.getToPoint();
+			if(pieces[capturePoint.y][capturePoint.x] instanceof KingPiece) {
+				checked = true;
+				break;
+			}
+		}
 
-		// check if our next move is forced
-		// keep moves which we capture opponent's piece
-		if (forcedMove(possibleMoves)) {
-			Iterator<MoveAnnotation> it = possibleMoves.iterator();
-			while (it.hasNext()) {
-				Point point = it.next().getToPoint();
-				if(pieces[point.y][point.x] == null) {
-					it.remove();
+		// must move King?
+		if (checked) {
+			for (int r=0; r<8; r++) {
+				for (int c=0; c<8; c++) {
+					Piece piece = pieces[r][c];
+					if(piece != null && piece.getPlayer().equals(player) && piece instanceof KingPiece) {
+						possibleMoves.addAll(piece.getPossibleMoves());
+					}
 				}
+			}
+			// we lost..
+			if (possibleMoves.isEmpty()) {
+				checkMate = true;
+				gameFinished = true;
+				if (isWhite) {
+					winner = Color.BLACK;
+				} else {
+					winner = Color.WHITE;
+				}
+				possibleMoves.add(new MoveAnnotation("0-1"));
 			}
 		} else {
-			int i = 0;
-			if (isWhite) {
-				i = 7;
+		// not checked
+			for (int r=0; r<8; r++) {
+				for (int c=0; c<8; c++) {
+					Piece piece = pieces[r][c];
+					if(piece != null && piece.getPlayer().equals(player)) {
+						ArrayList<MoveAnnotation> curMoves = piece.getPossibleMoves();
+						possibleMoves.addAll(curMoves);
+					}
+				}
 			}
 
-			// can we do castling?
-			canCastle();
-			try {
-				if (castling == Castling.KING) {
-					possibleMoves.add(new MoveAnnotation(String.format("e%dg%d", convert(i), convert(i))));
-				} else if (castling == Castling.QUEEN) {
-					possibleMoves.add(new MoveAnnotation(String.format("e%dc%d", convert(i), convert(i))));
+			// check if our next move is forced
+			// keep moves which we capture opponent's piece
+			if (forcedMove(possibleMoves)) {
+				Iterator<MoveAnnotation> it = possibleMoves.iterator();
+				while (it.hasNext()) {
+					Point point = it.next().getToPoint();
+					if(pieces[point.y][point.x] == null) {
+						it.remove();
+					}
 				}
-			} catch (Exception e) {
-				throw new Exception("invalid string format conversion from castling");
-			}
+			} else {
+			// our next is not forced
+				int i = 0;
+				if (isWhite) {
+					i = 7;
+				}
+
+				// can we do castling?
+				canCastle();
+				try {
+					if (castling == Castling.KING) {
+						possibleMoves.add(new MoveAnnotation(String.format("e%dg%d", convert(i), convert(i))));
+					} else if (castling == Castling.QUEEN) {
+						possibleMoves.add(new MoveAnnotation(String.format("e%dc%d", convert(i), convert(i))));
+					}
+				} catch (Exception e) {
+					throw new Exception("invalid string format conversion from castling");
+				}
 			
-		}
+				// can we call a draw?
+				if (fiftyMoveCount == 50) {
+					possibleMoves.add(new MoveAnnotation("1/2-1/2"));
+				}  // TODO: else if ( any of hashtable entry has >= 3? )
+			}
+		} // checked?
+		
 
 		return possibleMoves;
 	}
@@ -133,6 +206,11 @@ public class Board {
 	public void printBoard() {
 		// TODO: print the current state
 		return;
+	}
+
+	// TODO: get the hash value of the current state
+	public String getBoardHash() {
+		return "";
 	}
 
 	// initialize pieces
