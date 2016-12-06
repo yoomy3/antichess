@@ -31,6 +31,8 @@ public class MoveAnnotation {
 		int fromX = move.charAt(0) - 'a';
 		int fromY = move.charAt(1) - '0';
 		if (isValidPoint(fromX, fromY)) {
+			// convert to index
+			fromY = 8-fromY;
 			fromPoint = new Point(fromX, fromY);
 		} else {
 			throw new Exception("from point is invalid");
@@ -42,6 +44,8 @@ public class MoveAnnotation {
 		int toX = move.charAt(2) - 'a';
 		int toY = move.charAt(3) - '0';
 		if (isValidPoint(toX, toY)) {
+			// convert to index
+			toY = 8-toY;
 			toPoint = new Point(toX, toY);
 		} else {
 			throw new Exception("to point is invalid");
@@ -71,6 +75,7 @@ public class MoveAnnotation {
 	}
 
 	// we have [8][8] board
+	// *NOTE: checks rank and file
 	private boolean isValidPoint(int pointX, int pointY) {
 		System.out.println("x: " + pointX + " y: " + pointY);
 		return (0 <= pointX) && (pointX <= 8) && (0 <= pointY) && (pointY <= 8);
@@ -81,10 +86,12 @@ public class MoveAnnotation {
 		return move;
 	}
 	
+	// *NOTE: returns index, need a convertion for rank/file
 	Point getFromPoint() {
 		return fromPoint;
 	}
 
+	// *NOTE: returns index, need a convertion for rank/file
 	Point getToPoint() {
 		return toPoint;
 	}
