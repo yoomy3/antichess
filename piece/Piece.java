@@ -33,12 +33,13 @@ public class Piece {
 	}
 
 	// empty base function
+	// returns a set of moves to empty cell or to capture the opponent's piece
 	public ArrayList<MoveAnnotation> getPossibleMoves() {
 		return new ArrayList<MoveAnnotation>();
 	}
 
 	// empty base function
-	// TODO: implement inherited functions
+	// gets a string that represents a piece
 	public String getPieceString() {
 		return "";
 	}
