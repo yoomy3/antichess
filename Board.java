@@ -89,7 +89,7 @@ public class Board {
 			fiftyMoveCount++;
 		}
 
-		// TODO: castling? -> check move is one of (e1g1, e1c1, e8g8, e8c8)
+		// castling: move is one of (e1g1, e1c1, e8g8, e8c8)
 		String moveString = move.getMoveString();
 		if (moveString.equals("e1g1") || moveString.equals("e1c1") || moveString.equals("e8g8") || moveString.equals("e8c8")) {
 			switch (moveString) {
