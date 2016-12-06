@@ -24,7 +24,7 @@ public class Board {
 	Castling castling;
 	boolean isCastled;
 	
-	boolean checked;
+	boolean checked;	// is our King checked?
 	boolean checkMate;
 
 	// hashtable to keep all the states - check for threefold repetition
@@ -149,8 +149,13 @@ public class Board {
 		for (int r=0; r<8; r++) {
 			for (int c=0; c<8; c++) {
 				Piece piece = pieces[r][c];
-				if(piece != null && piece.getPlayer().equals(player)) {
-					possibleAttacks.addAll(piece.getCaptureMoves());
+				if(piece != null && !piece.getPlayer().equals(player)) {
+					ArrayList<MoveAnnotation> possibleAttack = piece.getPossibleMoves();
+					for (MoveAnnotation attackMove : possibleAttack) {
+						if (pieces[getRow(attackMove.getToPoint())][getCol(attackMove.getToPoint())] != null) {
+							possibleAttacks.add(attackMove);
+						}
+					}
 				}
 			}
 		}

@@ -39,12 +39,6 @@ public class Piece {
 
 	// empty base function
 	// TODO: implement inherited functions
-	public ArrayList<MoveAnnotation> getCaptureMoves() {
-		return new ArrayList<MoveAnnotation>();
-	}
-
-	// empty base function
-	// TODO: implement inherited functions
 	public String getPieceString() {
 		return "";
 	}
