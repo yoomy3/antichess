@@ -10,24 +10,24 @@ public class Board {
 	private Piece[][] pieces; // 8x8 board
 	private Color player; // either WHITE/BLACK
 	private Color winner; // TODO: set up winner when finished
-	boolean isWhite; 
+	private boolean isWhite; 
 	
-	boolean enPassant;
-	boolean isCaptured;
+	private boolean enPassant;
+	private boolean isCaptured;
 	private boolean gameFinished; // TODO: set up game finished when finished
 
-	int fiftyMoveCount;
+	private int fiftyMoveCount;
+
+	private Castling castling;
+	private boolean isCastled;
+	
+	private boolean checked;
+	private boolean checkMate;
 
 	// King/Queen side castling
 	private enum Castling {
 		NONE, KING, QUEEN
 	}
-
-	private Castling castling;
-	boolean isCastled;
-	
-	boolean checked;
-	boolean checkMate;
 
 	// QUESTION: How do we know who's turn it is? -> handling En Passant
 
@@ -47,12 +47,12 @@ public class Board {
 		castling = Castling.NONE;
 	}
 	
-	// copy constructore;
+	// copy constructor;
 	public Board(Board anotherBoard) {
 		// TODO: write this
 	}
 
-	// copy constructore;
+	// empty default constructore;
 	public Board() {}
 	
 	// make a move, update the board
@@ -85,8 +85,15 @@ public class Board {
 		}
 
 		// check if our next move is forced
-		if (forcedMove()) {
-			// TODO: filter only moves which we capture opponent's piece
+		// keep moves which we capture opponent's piece
+		if (forcedMove(possibleMoves)) {
+			Iterator<MoveAnnotation> it = possibleMoves.iterator();
+			while (it.hasNext()) {
+				Point point = it.next().getToPoint();
+				if(pieces[point.y][point.x] == null) {
+					it.remove();
+				}
+			}
 		} else {
 			int i = 0;
 			if (isWhite) {
@@ -201,7 +208,13 @@ public class Board {
 	}
 
 	// check if our next move is forced
-	private boolean forcedMove() {
+	private boolean forcedMove(ArrayList<MoveAnnotation> possibleMoves) {
+		for (MoveAnnotation move : possibleMoves) {
+			Point point = move.getToPoint();
+			if(pieces[point.y][point.x] != null) {
+				return true;
+			}
+		}
 		return false;
 	}
 }
