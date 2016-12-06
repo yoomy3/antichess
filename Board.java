@@ -1,6 +1,8 @@
 package antiChess;
 
 import java.awt.Color;
+import java.awt.Point;
+import java.util.Iterator;
 import java.util.ArrayList;
 
 import antiChess.piece.*;
@@ -10,19 +12,19 @@ public class Board {
 	private Piece[][] pieces; // 8x8 board
 	private Color player; // either WHITE/BLACK
 	private Color winner; // TODO: set up winner when finished
-	private boolean isWhite; 
+	boolean isWhite; 
 	
-	private boolean enPassant;
-	private boolean isCaptured;
-	private boolean gameFinished; // TODO: set up game finished when finished
+	boolean enPassant;
+	boolean isCaptured;
+	boolean gameFinished; // TODO: set up game finished when finished
 
-	private int fiftyMoveCount;
+	int fiftyMoveCount;
 
 	private Castling castling;
-	private boolean isCastled;
+	boolean isCastled;
 	
-	private boolean checked;
-	private boolean checkMate;
+	boolean checked;
+	boolean checkMate;
 
 	// King/Queen side castling
 	private enum Castling {
