@@ -2,8 +2,10 @@ package antiChess;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.util.Set;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import antiChess.piece.*;
 
@@ -11,11 +13,11 @@ public class Board {
 	// private variables
 	Piece[][] pieces; // 8x8 board
 	Color player; // either WHITE/BLACK
-	Color winner; // TODO: set up winner when finished
+	Color winner; // set up winner when finished
 	boolean isWhite; 
 	
 	boolean enPassant;
-	boolean gameFinished; // TODO: set up game finished when finished
+	boolean gameFinished; // set up game finished when finished
 
 	int fiftyMoveCount;
 
@@ -25,7 +27,8 @@ public class Board {
 	boolean checked;
 	boolean checkMate;
 
-	// TODO: add hash table to check threefold repetition
+	// hashtable to keep all the states - check for threefold repetition
+	Hashtable<Integer, Integer> states = new Hashtable<Integer, Integer>();
 
 	// King/Queen side castling
 	private enum Castling {
@@ -72,26 +75,66 @@ public class Board {
 	public Board() {}
 	
 	// make a move, update the board
-	public Board takeMove(MoveAnnotation move) {
+	public Board takeMove(MoveAnnotation move) throws Exception {
 		Point fromPoint = move.getFromPoint();
 		Point toPoint = move.getToPoint();
-		
+
 		// who's piece is moving?
-		Color movingPlayer = pieces[fromPoint.y][fromPoint.x].getPlayer();
-		
+		Color movingPlayer = pieces[getRow(fromPoint)][getCol(fromPoint)].getPlayer();
+
 		// see if a piece is captured
-		if (pieces[toPoint.y][toPoint.x] != null) {
+		if (pieces[getRow(toPoint)][(getCol(toPoint))] != null) {
 			fiftyMoveCount = 0;
 		} else {
 			fiftyMoveCount++;
 		}
 
 		// TODO: castling? -> check move is one of (e1g1, e1c1, e8g8, e8c8)
+		String moveString = move.getMoveString();
+		if (moveString.equals("e1g1") || moveString.equals("e1c1") || moveString.equals("e8g8") || moveString.equals("e8c8")) {
+			switch (moveString) {
+				// move Rock
+				case "e1g1":
+					pieces[7][5] = pieces[7][7];
+					pieces[7][5].updatePosition(7, 5);
+					pieces[7][7] = null;
+					break;
+				case "e1c1":
+					pieces[7][3] = pieces[7][0];
+					pieces[7][3].updatePosition(7, 3);
+					pieces[7][0] = null;
+					break;
+				case "e8g8":
+					pieces[0][5] = pieces[0][7];
+					pieces[0][5].updatePosition(0, 5);
+					pieces[0][7] = null;
+					break;
+				case "e8c8":
+					pieces[0][3] = pieces[0][0];
+					pieces[0][3].updatePosition(0, 3);
+					pieces[0][0] = null;
+					break;
+				default:
+					throw new Exception("invalid castling move string");
+			}
+		}
 
 		// TODO: check EnPassant
 
-		pieces[toPoint.y][toPoint.x] = pieces[fromPoint.y][fromPoint.x];
-		pieces[fromPoint.y][fromPoint.x] = null;
+		// move a piece, update the board
+		pieces[getRow(toPoint)][getCol(toPoint)] = pieces[getRow(fromPoint)][getCol(fromPoint)];
+		pieces[getRow(toPoint)][getCol(toPoint)].updatePosition(getRow(toPoint), getCol(toPoint));
+		pieces[getRow(fromPoint)][getCol(fromPoint)] = null;
+
+		// add state hash
+		int stateHash = getBoardHash();
+		if (states.containsKey(stateHash)) {
+			int c = states.get(stateHash);
+			c += 1;
+			states.put(stateHash, c);
+		} else {
+			states.put(stateHash, 1);
+		}
 
 		return this;
 	}
@@ -100,7 +143,7 @@ public class Board {
 	// it's our turn!
 	ArrayList<MoveAnnotation> getPossibleMoves() throws Exception {
 		ArrayList<MoveAnnotation> possibleMoves = new ArrayList<MoveAnnotation>();
-		
+
 		// checked?
 		ArrayList<MoveAnnotation> possibleAttacks = new ArrayList<MoveAnnotation>();
 		for (int r=0; r<8; r++) {
@@ -113,7 +156,7 @@ public class Board {
 		}
 		for (MoveAnnotation move : possibleAttacks) {
 			Point capturePoint = move.getToPoint();
-			if(pieces[capturePoint.y][capturePoint.x] instanceof KingPiece) {
+			if(pieces[getRow(capturePoint)][getCol(capturePoint)] instanceof KingPiece) {
 				checked = true;
 				break;
 			}
@@ -158,7 +201,7 @@ public class Board {
 				Iterator<MoveAnnotation> it = possibleMoves.iterator();
 				while (it.hasNext()) {
 					Point point = it.next().getToPoint();
-					if(pieces[point.y][point.x] == null) {
+					if(pieces[getRow(point)][getCol(point)] == null) {
 						it.remove();
 					}
 				}
@@ -180,14 +223,23 @@ public class Board {
 				} catch (Exception e) {
 					throw new Exception("invalid string format conversion from castling");
 				}
-			
+
 				// can we call a draw?
+				// * 50-move rule
 				if (fiftyMoveCount == 50) {
 					possibleMoves.add(new MoveAnnotation("1/2-1/2"));
-				}  // TODO: else if ( any of hashtable entry has >= 3? )
+				} 
+
+				// * threefold repetition
+				Set<Integer> keys = states.keySet();
+				for (int key: keys){
+					if (states.get(key) >= 3) {
+						possibleMoves.add(new MoveAnnotation("1/2-1/2"));
+					}
+				}
 			}
 		} // checked?
-		
+
 
 		return possibleMoves;
 	}
@@ -208,9 +260,19 @@ public class Board {
 		return;
 	}
 
-	// TODO: get the hash value of the current state
-	public String getBoardHash() {
-		return "";
+	// get the hash value of the current state
+	public int getBoardHash() {
+		String res = "";
+		for (int r = 0; r < 8; r++) {
+			for (int c = 0; c < 8; c++) {
+				if (pieces[r][c] != null) {
+					res += pieces[r][c].getPieceString();
+				} else {
+					res += ".";
+				}
+			}
+		}
+		return res.hashCode();
 	}
 
 	// initialize pieces
@@ -261,28 +323,33 @@ public class Board {
 	}
 
 	private void canCastle() {
-		boolean res = false;
-		
 		int row = 0;
 		if (isWhite) {
 			row = 7;
 		}
 
+		if (isCastled || checked) {
+			return;
+		}
+
 		// king side castling
+		// TODO: check if squares that King passes through are under attack
 		if (pieces[row][4] instanceof KingPiece &&
+			!pieces[row][4].hasEverMoved() &&
 			pieces[row][5] == null &&
 			pieces[row][6] == null &&
 			pieces[row][7] instanceof RookPiece &&
-			!isCastled) {
+			!pieces[row][7].hasEverMoved()) {
 			castling = Castling.KING;
 		}
 		// queen side castling
 		else if (pieces[row][0] instanceof RookPiece &&
-					pieces[row][1] == null &&
-					pieces[row][2] == null &&
-					pieces[row][3] == null &&
-					pieces[row][4] instanceof KingPiece &&
-					!isCastled) {
+				!pieces[row][0].hasEverMoved() &&
+				pieces[row][1] == null &&
+				pieces[row][2] == null &&
+				pieces[row][3] == null &&
+				pieces[row][4] instanceof KingPiece &&
+				!pieces[row][4].hasEverMoved()) {
 			castling = Castling.QUEEN;
 		}
 	}
@@ -291,10 +358,18 @@ public class Board {
 	private boolean forcedMove(ArrayList<MoveAnnotation> possibleMoves) {
 		for (MoveAnnotation move : possibleMoves) {
 			Point point = move.getToPoint();
-			if(pieces[point.y][point.x] != null) {
+			if(pieces[getRow(point)][getCol(point)] != null) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private int getCol(Point point) {
+		return point.x;
+	}
+
+	private int getRow(Point point) {
+		return point.y;
 	}
 }

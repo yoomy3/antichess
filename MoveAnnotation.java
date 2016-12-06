@@ -28,12 +28,12 @@ public class MoveAnnotation {
 	
 	// get from point
 	private void getFromPoint(String move) throws Exception {
-		int fromX = move.charAt(0) - 'a';
-		int fromY = move.charAt(1) - '0';
-		if (isValidPoint(fromX, fromY)) {
+		int fromCol = move.charAt(0) - 'a';
+		int fromRow = move.charAt(1) - '0';
+		if (isValidPoint(fromCol, fromRow)) {
 			// convert to index
-			fromY = 8-fromY;
-			fromPoint = new Point(fromX, fromY);
+			fromRow = 8-fromRow;
+			fromPoint = new Point(fromCol, fromRow);
 		} else {
 			throw new Exception("from point is invalid");
 		}
@@ -41,12 +41,12 @@ public class MoveAnnotation {
 
 	// get to point
 	private void getToPoint(String move) throws Exception {
-		int toX = move.charAt(2) - 'a';
-		int toY = move.charAt(3) - '0';
-		if (isValidPoint(toX, toY)) {
+		int toCol = move.charAt(2) - 'a';
+		int toRow = move.charAt(3) - '0';
+		if (isValidPoint(toCol, toRow)) {
 			// convert to index
-			toY = 8-toY;
-			toPoint = new Point(toX, toY);
+			toRow = 8-toRow;
+			toPoint = new Point(toCol, toRow);
 		} else {
 			throw new Exception("to point is invalid");
 		}

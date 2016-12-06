@@ -7,23 +7,29 @@ import antiChess.MoveAnnotation;
 
 public class Piece {
 	// private vars
-	protected int x;
-	protected int y;
+	protected int row;
+	protected int col;
 	protected int rank;
 	protected int file;
 	protected Color player;
+	protected boolean moved;
 
-	public Piece(int x, int y, Color color) {
-		this.x = x;
-		this.y = y;
-		this.rank = 8-x;		// convert index to rank
-		this.file = y;
+	// *NOTE: receives an index pair
+	public Piece(int row, int col, Color color) {
+		this.row = row;
+		this.col = col;
+		this.rank = 8-row;		// convert index to rank
+		this.file = col;
 		this.player = color;
+		this.moved = false;
 	}
 
 	// copy constructor
 	public Piece(Piece copy) {
-		this(copy.getX(), copy.getY(), copy.getPlayer());
+		this(copy.getRow(), copy.getCol(), copy.getPlayer());
+		rank = 8-copy.getRow();
+		file = copy.getCol();
+		moved = copy.hasEverMoved();
 	}
 
 	// empty base function
@@ -37,16 +43,34 @@ public class Piece {
 		return new ArrayList<MoveAnnotation>();
 	}
 
-	// getters
-	public int getX() { return x; }
+	// empty base function
+	// TODO: implement inherited functions
+	public String getPieceString() {
+		return "";
+	}
 
-	public int getY() { return y; }
+	// getters
+	public int getRow() { return row; }
+
+	public int getCol() { return col; }
 
 	public int getRank() { return rank; }
 
 	public int getFile() { return file; }
 
 	public Color getPlayer() { return player; }
+
+	public boolean hasEverMoved() { return moved; }
+
+	// setters
+
+	// *NOTE: accepts an index pair
+	public void updatePosition(int row, int col) {
+		this.row = row;
+		this.col = col;
+		this.rank = 8-row;
+		this.file = col;
+	}
 
 	// we have [8][8] board
 	protected boolean isValidPoint(int pointX, int pointY) {
