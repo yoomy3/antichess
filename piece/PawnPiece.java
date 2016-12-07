@@ -31,7 +31,7 @@ public class PawnPiece extends Piece {
 			possibleMoves.add(toMoveAnnotation(row + offset, col));
 			
 			// Pawn can proceed 2 cells if it hasn't been moved yet
-			if (!moved) {
+			if (!moved && board[row + 2*offset][col] == null) {
 				possibleMoves.add(toMoveAnnotation(row + 2*offset, col));
 			}
 		}
