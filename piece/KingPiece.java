@@ -38,8 +38,8 @@ public class KingPiece extends Piece {
 				}
 
 				if (isValidPoint(r, c) &&
-					!isCellUnderAttack(r, c, board) &&
-					(board[r][c] == null || (board[r][c] != null && !board[r][c].getPlayer().equals(player)))) {
+					(board[r][c] == null || (board[r][c] != null && !board[r][c].getPlayer().equals(player))) &&
+					!isCellUnderAttack(r, c, board)) {
 					possibleMoves.add(toMoveAnnotation(r, c));
 				}
 			}
@@ -71,8 +71,8 @@ public class KingPiece extends Piece {
 				}
 
 				if (isValidPoint(r, c) &&
-					!isCellUnderAttack(r, c, board) &&
-					board[r][c] != null && !board[r][c].getPlayer().equals(player)) {
+					board[r][c] != null && !board[r][c].getPlayer().equals(player) &&
+					!isCellUnderAttack(r, c, board)) {
 					attackMoves.add(toMoveAnnotation(r, c));
 				}
 			}
