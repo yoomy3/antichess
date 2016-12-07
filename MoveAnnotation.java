@@ -94,7 +94,7 @@ public class MoveAnnotation {
 	}
 
 	// *NOTE: returns index, need a convertion for rank/file
-	Point getToPoint() {
+	public Point getToPoint() {
 		return toPoint;
 	}
 

@@ -73,7 +73,27 @@ public class Board {
 
 	// empty default constructore;
 	public Board() {}
-	
+
+
+	///////////////////////////////////
+	//        Getter Section         //
+	///////////////////////////////////
+
+	public Piece[][] getPieces() { return pieces; }
+
+	public Piece getPiecesAt(int r, int c) { return pieces[r][c]; }
+
+	public Color getPlayer() { return player; }
+
+	public Color getWinner() { return winner; }
+
+	public boolean isGameFinished() { return gameFinished; }
+
+
+	///////////////////////////////////
+	//        Public Helpers         //
+	///////////////////////////////////
+
 	// make a move, update the board
 	public Board takeMove(MoveAnnotation move) throws Exception {
 		Point fromPoint = move.getFromPoint();
@@ -139,12 +159,8 @@ public class Board {
 		return this;
 	}
 		
-	// list all possible moves from the current state
-	// it's our turn!
-	ArrayList<MoveAnnotation> getPossibleMoves() throws Exception {
-		ArrayList<MoveAnnotation> possibleMoves = new ArrayList<MoveAnnotation>();
 
-		// checked?
+	public ArrayList<MoveAnnotation> getPossibleAttackMoves() throws Exception {
 		ArrayList<MoveAnnotation> possibleAttacks = new ArrayList<MoveAnnotation>();
 		for (int r=0; r<8; r++) {
 			for (int c=0; c<8; c++) {
@@ -154,6 +170,18 @@ public class Board {
 				}
 			}
 		}
+
+		return possibleAttacks;
+	}
+
+	// list all possible moves from the current state
+	// it's our turn!
+	public ArrayList<MoveAnnotation> getPossibleMoves() throws Exception {
+		ArrayList<MoveAnnotation> possibleMoves = new ArrayList<MoveAnnotation>();
+
+		// checked?
+		ArrayList<MoveAnnotation> possibleAttacks = getPossibleAttackMoves();
+
 		for (MoveAnnotation move : possibleAttacks) {
 			Point capturePoint = move.getToPoint();
 			if(pieces[getRow(capturePoint)][getCol(capturePoint)] instanceof KingPiece) {
@@ -166,9 +194,8 @@ public class Board {
 		if (checked) {
 			for (int r=0; r<8; r++) {
 				for (int c=0; c<8; c++) {
-					Piece piece = pieces[r][c];
-					if(piece != null && piece.getPlayer().equals(player) && piece instanceof KingPiece) {
-						possibleMoves.addAll(piece.getPossibleMoves(pieces));
+					if(pieces[r][c] != null && pieces[r][c].getPlayer().equals(player) && pieces[r][c] instanceof KingPiece) {
+						possibleMoves.addAll(pieces[r][c].getPossibleMoves(pieces));
 					}
 				}
 			}
@@ -187,9 +214,8 @@ public class Board {
 		// not checked
 			for (int r=0; r<8; r++) {
 				for (int c=0; c<8; c++) {
-					Piece piece = pieces[r][c];
-					if(piece != null && piece.getPlayer().equals(player)) {
-						ArrayList<MoveAnnotation> curMoves = piece.getPossibleMoves(pieces);
+					if(pieces[r][c] != null && pieces[r][c].getPlayer().equals(player)) {
+						ArrayList<MoveAnnotation> curMoves = pieces[r][c].getPossibleMoves(pieces);
 						possibleMoves.addAll(curMoves);
 					}
 				}
@@ -244,24 +270,37 @@ public class Board {
 		return possibleMoves;
 	}
 	
-	// getter section
-	public Piece[][] getPieces() { return pieces; }
-
-	public Piece getPiecesAt(int r, int c) { return pieces[r][c]; }
-
-	public Color getPlayer() { return player; }
-
-	public Color getWinner() { return winner; }
-	
-	public boolean isGameFinished() { return gameFinished; }
-	
 	public void printBoard() {
 		// TODO: print the current state
 		return;
 	}
 
+	// is (row, col) cell is being attacked by any opponent piece?
+	// *NOTE: accepts an index pair
+	public boolean isCellUnderAttack(int row, int col) throws Exception {
+		for (int r=0; r<8; r++) {
+			for (int c=0; c<8; c++) {
+				if(pieces[r][c] != null && !pieces[r][c].getPlayer().equals(player)) {
+					for (MoveAnnotation move : pieces[r][c].getPossibleMoves(pieces)) {
+						Point toPoint = move.getToPoint();
+						if (getRow(toPoint) == row && getCol(toPoint) == col) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+
+	///////////////////////////////////
+	//        Private Helpers        //
+	///////////////////////////////////
+
 	// get the hash value of the current state
-	public int getBoardHash() {
+	private int getBoardHash() {
 		String res = "";
 		for (int r = 0; r < 8; r++) {
 			for (int c = 0; c < 8; c++) {
@@ -322,7 +361,7 @@ public class Board {
 		return 8 - i;
 	}
 
-	private void canCastle() {
+	private void canCastle() throws Exception {
 		int row = 0;
 		if (isWhite) {
 			row = 7;
@@ -332,12 +371,19 @@ public class Board {
 			return;
 		}
 
+		// Conditions for castling
+		// * Castling has not been done yet (can be done only once throughout the entire game)
+		// * King and Rook that are being swapped have not been moved yet
+		// * Cells between King and the moving Rook are empty
+		// * Cells that King passes through are NOT under attack
+
 		// king side castling
-		// TODO: check if squares that King passes through are under attack
 		if (pieces[row][4] instanceof KingPiece &&
 			!pieces[row][4].hasEverMoved() &&
 			pieces[row][5] == null &&
+			!isCellUnderAttack(row, 5) &&
 			pieces[row][6] == null &&
+			!isCellUnderAttack(row, 6) &&
 			pieces[row][7] instanceof RookPiece &&
 			!pieces[row][7].hasEverMoved()) {
 			castling = Castling.KING;
@@ -347,7 +393,9 @@ public class Board {
 				!pieces[row][0].hasEverMoved() &&
 				pieces[row][1] == null &&
 				pieces[row][2] == null &&
+				!isCellUnderAttack(row, 2) &&
 				pieces[row][3] == null &&
+				!isCellUnderAttack(row, 3) &&
 				pieces[row][4] instanceof KingPiece &&
 				!pieces[row][4].hasEverMoved()) {
 			castling = Castling.QUEEN;

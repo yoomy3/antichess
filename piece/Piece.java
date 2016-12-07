@@ -72,6 +72,7 @@ public class Piece {
 		this.col = col;
 		this.rank = 8-row;
 		this.file = col;
+		this.moved = true;
 	}
 
 	// we have [8][8] board
