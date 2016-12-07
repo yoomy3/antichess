@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import antiChess.MoveAnnotation;
 
 public class KingPiece extends Piece {
-
+	private boolean kingChecked = false; // isCellUnderAttack and getPossibleMoves have infinite loop -> stackoverflow
+	
 	public KingPiece(int x, int y, Color color) {
 		super(x, y, color);
 	}
@@ -39,7 +40,7 @@ public class KingPiece extends Piece {
 
 				if (isValidPoint(r, c) &&
 					(board[r][c] == null || (board[r][c] != null && !board[r][c].getPlayer().equals(player))) &&
-					!isCellUnderAttack(r, c, board)) {
+					!kingChecked && !isCellUnderAttack(r, c, board)) {
 					possibleMoves.add(toMoveAnnotation(r, c));
 				}
 			}
@@ -72,7 +73,7 @@ public class KingPiece extends Piece {
 
 				if (isValidPoint(r, c) &&
 					board[r][c] != null && !board[r][c].getPlayer().equals(player) &&
-					!isCellUnderAttack(r, c, board)) {
+					!kingChecked && !isCellUnderAttack(r, c, board)) {
 					attackMoves.add(toMoveAnnotation(r, c));
 				}
 			}
@@ -94,6 +95,7 @@ public class KingPiece extends Piece {
 	// is (row, col) cell is being attacked by any opponent piece?
 	// *NOTE: accepts an index pair
 	private boolean isCellUnderAttack(int row, int col, Piece[][] board) throws Exception {
+		kingChecked = true;
 		for (int r=0; r<8; r++) {
 			for (int c=0; c<8; c++) {
 				if(board[r][c] != null && !board[r][c].getPlayer().equals(player)) {
@@ -106,7 +108,7 @@ public class KingPiece extends Piece {
 				}
 			}
 		}
-
+		kingChecked = false;
 		return false;
 	}
 }

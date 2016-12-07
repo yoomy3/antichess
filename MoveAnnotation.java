@@ -23,17 +23,17 @@ public class MoveAnnotation {
 
 	// get whether player claims the draw
 	private void getClaimDraw(String move) {
-		claimDraw = (move.contains("1/2-1/2") && (move.length() > 10));
+		claimDraw = (move.contains("1/2-1/2"));
 	}
 	
 	// get from point
 	// *NOTE: Point represents an index pair
 	private void getFromPoint(String move) throws Exception {
 		int fromCol = move.charAt(0) - 'a';
-		int fromRow = move.charAt(1) - '0';
+		int fromRow = move.charAt(1) - '1';
 		if (isValidPoint(fromCol, fromRow)) {
 			// convert to index
-			fromRow = 8-fromRow;
+			fromRow = 7-fromRow;
 			fromPoint = new Point(fromCol, fromRow);
 		} else {
 			throw new Exception("from point is invalid");
@@ -44,10 +44,10 @@ public class MoveAnnotation {
 	// *NOTE: Point represents an index pair
 	private void getToPoint(String move) throws Exception {
 		int toCol = move.charAt(2) - 'a';
-		int toRow = move.charAt(3) - '0';
+		int toRow = move.charAt(3) - '1';
 		if (isValidPoint(toCol, toRow)) {
 			// convert to index
-			toRow = 8-toRow;
+			toRow = 7-toRow;
 			toPoint = new Point(toCol, toRow);
 		} else {
 			throw new Exception("to point is invalid");
@@ -56,7 +56,7 @@ public class MoveAnnotation {
 
 	// get promotion enum
 	private void getPromotion(String move) throws Exception {
-		if (move.length() > 4) {
+		if ((move.length() > 4) && (!claimDraw)) {
 			switch (move.charAt(4)) {
 			case 'q':
 				promotion = Promotion.QUEEN;
@@ -79,7 +79,7 @@ public class MoveAnnotation {
 	// we have [8][8] board
 	// *NOTE: checks rank and file
 	private boolean isValidPoint(int pointX, int pointY) {
-		return (0 <= pointX) && (pointX < 8) && (0 <= pointY) && (pointY < 8);
+		return claimDraw || ((0 <= pointX) && (pointX < 8) && (0 <= pointY) && (pointY < 8));
 	}
 
 	// getter section
