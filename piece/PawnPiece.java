@@ -19,14 +19,11 @@ public class PawnPiece extends Piece {
 	public ArrayList<MoveAnnotation> getPossibleMoves(Piece[][] board) throws Exception {
 		ArrayList<MoveAnnotation> possibleMoves = new ArrayList<MoveAnnotation>();
 		int offset;
-		Color opponent;
 
 		if (player.equals(Color.WHITE)) {
 			offset = -1;
-			opponent = Color.BLACK;
 		} else {
 			offset = 1;
-			opponent = Color.WHITE;
 		}
 
 		if (isValidPoint(row + offset, col) &&
@@ -35,12 +32,12 @@ public class PawnPiece extends Piece {
 		}
 		if (isValidPoint(row + offset, col + offset) &&
 			board[row + offset][col + offset] != null &&
-			board[row + offset][col + offset].getPlayer().equals(Color.BLACK)) {
+			!board[row + offset][col + offset].getPlayer().equals(player)) {
 			possibleMoves.add(toMoveAnnotation(row + offset, col + offset));
 		}
 		if (isValidPoint(row + offset, col - offset) &&
 			board[row + offset][col - offset] != null &&
-			board[row + offset][col - offset].getPlayer().equals(Color.BLACK)) {
+			!board[row + offset][col - offset].getPlayer().equals(player)) {
 			possibleMoves.add(toMoveAnnotation(row + offset, col - offset));
 		}
 
@@ -52,24 +49,21 @@ public class PawnPiece extends Piece {
 	public ArrayList<MoveAnnotation> getAttackMoves(Piece[][] board) throws Exception {
 		ArrayList<MoveAnnotation> attackMoves = new ArrayList<MoveAnnotation>();
 		int offset;
-		Color opponent;
 
 		if (player.equals(Color.WHITE)) {
 			offset = -1;
-			opponent = Color.BLACK;
 		} else {
 			offset = 1;
-			opponent = Color.WHITE;
 		}
 
 		if (isValidPoint(row + offset, col + offset) &&
 			board[row + offset][col + offset] != null &&
-			board[row + offset][col + offset].getPlayer().equals(Color.BLACK)) {
+			!board[row + offset][col + offset].getPlayer().equals(player)) {
 			attackMoves.add(toMoveAnnotation(row + offset, col + offset));
 		}
 		if (isValidPoint(row + offset, col - offset) &&
 			board[row + offset][col - offset] != null &&
-			board[row + offset][col - offset].getPlayer().equals(Color.BLACK)) {
+			!board[row + offset][col - offset].getPlayer().equals(player)) {
 			attackMoves.add(toMoveAnnotation(row + offset, col - offset));
 		}
 

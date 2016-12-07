@@ -16,15 +16,44 @@ public class RookPiece extends Piece {
 
 	@Override
 	// returns a set of moves to empty cell or to capture the opponent's piece
-	public ArrayList<MoveAnnotation> getPossibleMoves(Piece[][] board) {
-		// TODO: write this
-		return new ArrayList<MoveAnnotation>();
+	public ArrayList<MoveAnnotation> getPossibleMoves(Piece[][] board) throws Exception {
+		ArrayList<MoveAnnotation> possibleMoves = new ArrayList<MoveAnnotation>();
+
+		for (int r = 0; r < 8; r++) {
+			if (board[r][col] == null ||
+			(board[r][col] != null && !board[r][col].getPlayer().equals(player))) {
+				possibleMoves.add(toMoveAnnotation(r, col));
+			}
+		}
+
+		for (int c = 0; c < 8; c++) {
+			if (board[row][c] == null ||
+			(board[row][c] != null && !board[row][c].getPlayer().equals(player))) {
+				possibleMoves.add(toMoveAnnotation(row, c));
+			}
+		}
+
+		return possibleMoves;
 	}
 
 	@Override
 	// returns a set of moves to capture the opponent's piece only
-	public ArrayList<MoveAnnotation> getAttackMoves(Piece[][] board) {
-		return new ArrayList<MoveAnnotation>();
+	public ArrayList<MoveAnnotation> getAttackMoves(Piece[][] board) throws Exception {
+		ArrayList<MoveAnnotation> attackMoves = new ArrayList<MoveAnnotation>();
+
+		for (int r = 0; r < 8; r++) {
+			if (board[r][col] != null && !board[r][col].getPlayer().equals(player)) {
+				attackMoves.add(toMoveAnnotation(r, col));
+			}
+		}
+
+		for (int c = 0; c < 8; c++) {
+			if (board[row][c] != null && !board[row][c].getPlayer().equals(player)) {
+				attackMoves.add(toMoveAnnotation(row, c));
+			}
+		}
+
+		return attackMoves;
 	}
 
 	@Override
