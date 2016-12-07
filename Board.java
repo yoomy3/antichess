@@ -273,8 +273,29 @@ public class Board {
 	}
 	
 	public void printBoard() {
-		// TODO: print the current state
-		return;
+		System.out.println("     a   b   c   d   e   f   g   h  ");
+		for (int r=0; r<8; r++) {
+			System.out.println("   ---------------------------------");
+			String s = (8 - r) + "  | ";
+			for (int c=0; c<8; c++) {
+				if (pieces[r][c] == null) {
+					s = s + " " + " | ";
+				} else {
+					s = s + pieces[r][c].getPieceString() + " | ";
+				}
+			}
+			s += " " + (8 - r);
+			System.out.println(s);
+		}
+		System.out.println("   ---------------------------------");
+		System.out.println("     a   b   c   d   e   f   g   h  ");
+	}
+
+	public void printAllPossibleMoves(ArrayList<MoveAnnotation> possibleMoves) {
+		for (MoveAnnotation move : possibleMoves) {
+			System.out.println(move.getMoveString());
+		}
+		System.out.println("## " + possibleMoves.size() + " total possible moves");
 	}
 
 	// is (row, col) cell is being attacked by any opponent piece?
