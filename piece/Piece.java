@@ -77,10 +77,23 @@ public class Piece {
 	// we have [8][8] board
 	// *NOTE: this checks the index pair
 	protected boolean isValidPoint(Point point) {
-		int row = getRow(point);
-		int col = getCol(point);
-		// System.out.println("row: " + row + " col: " + col);
-		return (0 <= row) && (row <= 7) && (0 <= col) && (col <= 7);
+		int r = getRow(point);
+		int c = getCol(point);
+		// System.out.println("r: " + r + " c: " + c);
+		return (0 <= r) && (r <= 7) && (0 <= c) && (c <= 7);
+	}
+
+	protected boolean isValidPoint(int r, int c) {
+		return (0 <= r) && (r <= 7) && (0 <= c) && (c <= 7);
+	}
+
+	// consumes next move as an index pair, makes a MoveAnnotation
+	protected MoveAnnotation toMoveAnnotation(int r, int c) {
+		char f = 'a' + file;
+		char f2 = 'a' + c;
+		String moveString = String.valueOf(f) + Integer.toString(8 - rank) + String.valueOf(f2) + Integer.toString(8 - r);
+
+		return new MoveAnnotation(moveString);
 	}
 
 	protected int getCol(Point point) {
