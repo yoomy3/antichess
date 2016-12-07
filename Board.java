@@ -40,7 +40,9 @@ public class Board {
 		pieces = new Piece[8][8];
 		for (int r=0; r<8; r++) {
 			for (int c=0; c<8; c++) {
-				pieces[r][c] = new Piece(anotherBoard.pieces[r][c]);
+				if (anotherBoard.pieces[r][c] != null) {
+					pieces[r][c] = new Piece(anotherBoard.pieces[r][c]);
+				}
 			}
 		}
 		player = anotherBoard.player;
@@ -315,44 +317,50 @@ public class Board {
 	}
 
 	// initialize pieces
-	private void initPieces(Piece[][] board, Color player) throws Exception {
+	private void initPieces() throws Exception {
 		int r = 0;
 		int offset = 1;
-		if (isWhite) {
-			r = 7;
-			offset = -1;
-		}
+		Color player = Color.BLACK;
 
-		// add other pieces
-		for (int c = 0; c < 8; c++) {
-			switch (c) {
-				case 0:
-				case 7:
-					board[r][c] = new RookPiece(r, c, player);
-					break;
-				case 1:
-				case 6:
-					board[r][c] = new KnightPiece(r, c, player);
-					break;
-				case 2:
-				case 5:
-					board[r][c] = new BishopPiece(r, c, player);
-					break;
-				case 3:
-					board[r][c] = new QueenPiece(r, c, player);
-					break;
-				case 4:
-					board[r][c] = new KingPiece(r, c, player);
-					break;
-				default:
-					throw new Exception("invalid board index");
+		for (int i = 0; i < 2; i++) {
+		System.out.println("i:" + i);
+			if (i == 1) {
+				r = 7;
+				offset = -1;
+				player = Color.WHITE;
 			}
-		}
 
-		r += offset;
-		// add pawns
-		for (int c = 0; c < 8; c++) {
-			board[r][c] = new PawnPiece(r, c, player);
+			// add other pieces
+			for (int c = 0; c < 8; c++) {
+				switch (c) {
+					case 0:
+					case 7:
+						pieces[r][c] = new RookPiece(r, c, player);
+						break;
+					case 1:
+					case 6:
+						pieces[r][c] = new KnightPiece(r, c, player);
+						break;
+					case 2:
+					case 5:
+						pieces[r][c] = new BishopPiece(r, c, player);
+						break;
+					case 3:
+						pieces[r][c] = new QueenPiece(r, c, player);
+						break;
+					case 4:
+						pieces[r][c] = new KingPiece(r, c, player);
+						break;
+					default:
+						throw new Exception("invalid board index");
+				}
+			}
+
+			r += offset;
+			// add pawns
+			for (int c = 0; c < 8; c++) {
+				pieces[r][c] = new PawnPiece(r, c, player);
+			}
 		}
 	}
 
