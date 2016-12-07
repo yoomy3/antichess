@@ -102,6 +102,79 @@ public class Piece {
 		return new MoveAnnotation(moveString);
 	}
 
+	// check if cells between origin and destination are empty
+	protected boolean isOpenPath(int origRow, int origCol, int destRow, int destCol, Piece[][] board) {
+		// horizontal move
+		if (origRow == destRow) {
+			// move left
+			if (origCol > destCol) {
+				for (int c = destCol+1; c < origCol; c++) {
+					if (board[row][c] != null) {
+						return false;
+					}
+				}
+			// move right
+			} else {
+				for (int c = origCol+1; c < destCol; c++) {
+					if (board[row][c] != null) {
+						return false;
+					}
+				}
+			}
+		// vertical move
+		} else if (origCol == destCol) {
+			// move down
+			if (origRow > destRow) {
+				for (int r = destRow+1; r < origRow; r++) {
+					if (board[r][col] != null) {
+						return false;
+					}
+				}
+			// move up
+			} else {
+				for (int r = origRow+1; r < destRow; r++) {
+					if (board[r][col] != null) {
+						return false;
+					}
+				}
+			}
+		// diagonal move
+		} else {
+			int rOffset, cOffset, r = origRow, c = origCol;
+
+			// move to bottom right
+			if (destRow > origRow && destCol > origCol) {
+				rOffset = 1;
+				cOffset = 1;
+			// move to top right
+			} else if (destRow < origRow && destCol > origCol) {
+				rOffset = -1;
+				cOffset = 1;
+			// move to top left
+			} else if (destRow < origRow && destCol < origCol) {
+				rOffset = -1;
+				cOffset = -1;
+			// move to bottom left
+			} else {
+				rOffset = 1;
+				cOffset = -1;
+			}
+
+			r += rOffset;
+			c += cOffset;
+			while (isValidPoint(r, c) && (r != destRow && c != destCol)) {
+				if (board[r][c] != null) {
+					return false;
+				}
+
+				r += rOffset;
+				c += cOffset;
+			}
+		}
+
+		return true;
+	}
+
 	protected int getCol(Point point) {
 		return point.x;
 	}
