@@ -79,8 +79,7 @@ public class MoveAnnotation {
 	// we have [8][8] board
 	// *NOTE: checks rank and file
 	private boolean isValidPoint(int pointX, int pointY) {
-		System.out.println("x: " + pointX + " y: " + pointY);
-		return (0 <= pointX) && (pointX <= 8) && (0 <= pointY) && (pointY <= 8);
+		return (0 <= pointX) && (pointX < 8) && (0 <= pointY) && (pointY < 8);
 	}
 
 	// getter section
