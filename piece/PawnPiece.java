@@ -16,7 +16,7 @@ public class PawnPiece extends Piece {
 	
 	@Override
 	// returns a set of moves to empty cell or to capture the opponent's piece
-	public ArrayList<MoveAnnotation> getPossibleMoves(Piece[][] board) {
+	public ArrayList<MoveAnnotation> getPossibleMoves(Piece[][] board) throws Exception {
 		ArrayList<MoveAnnotation> possibleMoves = new ArrayList<MoveAnnotation>();
 		int offset;
 		Color opponent;
@@ -49,7 +49,7 @@ public class PawnPiece extends Piece {
 
 	@Override
 	// returns a set of moves to capture the opponent's piece only
-	public ArrayList<MoveAnnotation> getAttackMoves(Piece[][] board) {
+	public ArrayList<MoveAnnotation> getAttackMoves(Piece[][] board) throws Exception {
 		ArrayList<MoveAnnotation> attackMoves = new ArrayList<MoveAnnotation>();
 		int offset;
 		Color opponent;

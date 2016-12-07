@@ -35,13 +35,13 @@ public class Piece {
 
 	// empty base function
 	// returns a set of moves to empty cell or to capture the opponent's piece
-	public ArrayList<MoveAnnotation> getPossibleMoves(Piece[][] board) {
+	public ArrayList<MoveAnnotation> getPossibleMoves(Piece[][] board) throws Exception {
 		return new ArrayList<MoveAnnotation>();
 	}
 
 	// empty base function
 	// returns a set of moves to capture the opponent's piece only
-	public ArrayList<MoveAnnotation> getAttackMoves(Piece[][] board) {
+	public ArrayList<MoveAnnotation> getAttackMoves(Piece[][] board) throws Exception {
 		return new ArrayList<MoveAnnotation>();
 	}
 
@@ -88,9 +88,15 @@ public class Piece {
 	}
 
 	// consumes next move as an index pair, makes a MoveAnnotation
-	protected MoveAnnotation toMoveAnnotation(int r, int c) {
-		char f = 'a' + file;
-		char f2 = 'a' + c;
+	protected MoveAnnotation toMoveAnnotation(int r, int c) throws Exception {
+		char f, f2;
+		try {
+			f = (char)('a' + file);
+			f2 = (char)('a' + c);
+		} catch (Exception e) {
+			throw new Exception("index to moveString conversion error");
+		}
+
 		String moveString = String.valueOf(f) + Integer.toString(8 - rank) + String.valueOf(f2) + Integer.toString(8 - r);
 
 		return new MoveAnnotation(moveString);

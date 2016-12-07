@@ -16,15 +16,114 @@ public class KnightPiece extends Piece {
 
 	@Override
 	// returns a set of moves to empty cell or to capture the opponent's piece
-	public ArrayList<MoveAnnotation> getPossibleMoves(Piece[][] board) {
-		// TODO: write this
-		return new ArrayList<MoveAnnotation>();
+	public ArrayList<MoveAnnotation> getPossibleMoves(Piece[][] board) throws Exception {
+		ArrayList<MoveAnnotation> possibleMoves = new ArrayList<MoveAnnotation>();
+		Color opponent;
+
+		if (player.equals(Color.WHITE)) {
+			opponent = Color.BLACK;
+		} else {
+			opponent = Color.WHITE;
+		}
+
+		if (isValidPoint(row+2, col+1) &&
+			(board[row+2][col+1] == null ||
+			(board[row+2][col+1] != null && board[row+2][col+1].getPlayer().equals(opponent)))) {
+			possibleMoves.add(toMoveAnnotation(row+2, col+1));
+		}
+		if (isValidPoint(row+1, col+2) &&
+			(board[row+1][col+2] == null ||
+			(board[row+1][col+2] != null && board[row+1][col+2].getPlayer().equals(opponent)))) {
+			possibleMoves.add(toMoveAnnotation(row+1, col+2));
+		}
+		if (isValidPoint(row-1, col+2) &&
+			(board[row-1][col+2] == null ||
+			(board[row-1][col+2] != null && board[row-1][col+2].getPlayer().equals(opponent)))) {
+			possibleMoves.add(toMoveAnnotation(row-1, col+2));
+		}
+		if (isValidPoint(row-2, col+1) &&
+			(board[row-2][col+1] == null ||
+			(board[row-2][col+1] != null && board[row-2][col+1].getPlayer().equals(opponent)))) {
+			possibleMoves.add(toMoveAnnotation(row-2, col+1));
+		}
+		if (isValidPoint(row-2, col-1) &&
+			(board[row-2][col-1] == null ||
+			(board[row-2][col-1] != null && board[row-2][col-1].getPlayer().equals(opponent)))) {
+			possibleMoves.add(toMoveAnnotation(row-2, col-1));
+		}
+		if (isValidPoint(row-1, col-2) &&
+			(board[row-1][col-2] == null ||
+			(board[row-1][col-2] != null && board[row-1][col-2].getPlayer().equals(opponent)))) {
+			possibleMoves.add(toMoveAnnotation(row-1, col-2));
+		}
+		if (isValidPoint(row+1, col-2) &&
+			(board[row+1][col-2] == null ||
+			(board[row+1][col-2] != null && board[row+1][col-2].getPlayer().equals(opponent)))) {
+			possibleMoves.add(toMoveAnnotation(row+1, col-2));
+		}
+		if (isValidPoint(row+2, col-1) &&
+			(board[row+2][col-1] == null ||
+			(board[row+2][col-1] != null && board[row+2][col-1].getPlayer().equals(opponent)))) {
+			possibleMoves.add(toMoveAnnotation(row+2, col-1));
+		}
+
+		return possibleMoves;
 	}
 
 		@Override
 	// returns a set of moves to capture the opponent's piece only
-	public ArrayList<MoveAnnotation> getAttackMoves(Piece[][] board) {
-		return new ArrayList<MoveAnnotation>();
+	public ArrayList<MoveAnnotation> getAttackMoves(Piece[][] board) throws Exception {
+		ArrayList<MoveAnnotation> attackMoves = new ArrayList<MoveAnnotation>();
+		Color opponent;
+
+		if (player.equals(Color.WHITE)) {
+			opponent = Color.BLACK;
+		} else {
+			opponent = Color.WHITE;
+		}
+
+		if (isValidPoint(row+2, col+1) &&
+			board[row+2][col+1] != null &&
+			board[row+2][col+1].getPlayer().equals(opponent)) {
+			attackMoves.add(toMoveAnnotation(row+2, col+1));
+		}
+		if (isValidPoint(row+1, col+2) &&
+			board[row+1][col+2] != null &&
+			board[row+1][col+2].getPlayer().equals(opponent)) {
+			attackMoves.add(toMoveAnnotation(row+1, col+2));
+		}
+		if (isValidPoint(row-1, col+2) &&
+			board[row-1][col+2] != null &&
+			board[row-1][col+2].getPlayer().equals(opponent)) {
+			attackMoves.add(toMoveAnnotation(row-1, col+2));
+		}
+		if (isValidPoint(row-2, col+1) &&
+			board[row-2][col+1] != null &&
+			board[row-2][col+1].getPlayer().equals(opponent)) {
+			attackMoves.add(toMoveAnnotation(row-2, col+1));
+		}
+		if (isValidPoint(row-2, col-1) &&
+			board[row-2][col-1] != null &&
+			board[row-2][col-1].getPlayer().equals(opponent)) {
+			attackMoves.add(toMoveAnnotation(row-2, col-1));
+		}
+		if (isValidPoint(row-1, col-2) &&
+			board[row-1][col-2] != null &&
+			board[row-1][col-2].getPlayer().equals(opponent)) {
+			attackMoves.add(toMoveAnnotation(row-1, col-2));
+		}
+		if (isValidPoint(row+1, col-2) &&
+			board[row+1][col-2] != null &&
+			board[row+1][col-2].getPlayer().equals(opponent)) {
+			attackMoves.add(toMoveAnnotation(row+1, col-2));
+		}
+		if (isValidPoint(row+2, col-1) &&
+			board[row+2][col-1] != null &&
+			board[row+2][col-1].getPlayer().equals(opponent)) {
+			attackMoves.add(toMoveAnnotation(row+2, col-1));
+		}
+
+		return attackMoves;
 	}
 
 	@Override
