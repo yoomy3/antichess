@@ -11,7 +11,7 @@ public class AntiChess {
 	private static int whiteSeconds, blackSeconds;
 	private static TimerTask whiteTask, blackTask;
 	private static Color chosenPlayer, opponentPlayer;
-	private static int timerLimit = 5; // TODO: change to 3-min per side
+	private static int timerLimit = 180; // TODO: change to 3-min per side
 	
 	// game and AI component
 	private static Scanner scanner = new Scanner(System.in);
@@ -73,10 +73,10 @@ public class AntiChess {
 	}
 	
 	// initialize all game states
-	private static void initGame(String side) {
+	private static void initGame(String side) throws Exception {
 	    getPlayer(side);
 	    scanner = new Scanner(System.in);
-		board = new Board();
+		board = new Board(chosenPlayer);
 		prune = new Prune();
 	}
 	
@@ -86,10 +86,11 @@ public class AntiChess {
 		resume(chosenPlayer);
 
 		// TODO: action for chosen player
-//		pruneAction = prune.getBestMove(board, board.getPossibleMoves());
+		board.printAllPossibleMoves(board.getPossibleMoves());
+		pruneAction = prune.getBestMove(board, board.getPossibleMoves());
 //		System.out.println(pruneAction.toString());
-//		board.takeMove(pruneAction);
-//		checkGameOver();
+		board.takeMove(pruneAction);
+		checkGameOver();
 
 		Thread.sleep(5000); // TODO: for demo, give 5 seconds per execution
 		pause(chosenPlayer);
@@ -101,8 +102,8 @@ public class AntiChess {
 		resume(opponentPlayer);
 		
 		// TODO: opponent action
-//		board.takeMove(inputAction);
-//		checkGameOver();
+		board.takeMove(inputAction);
+		checkGameOver();
 		
 		Thread.sleep(5000); // TODO: for demo, give 5 seconds per execution
 		pause(opponentPlayer);
@@ -126,16 +127,18 @@ public class AntiChess {
 	}
 	public static void main(String arg[]) throws Exception {
 		// create instances
-//		initGame(arg[0]); // TODO: read this from command line argument when finish
-		initGame("White"); // TODO: read this from command line argument when finish
-	    
+		initGame(arg[0]); // TODO: read this from command line argument when finish
+//		initGame("White"); // TODO: read this from command line argument when finish
+
+		board.printBoard();
+
 		// if we need to go first
 		if (chosenPlayer.equals(Color.WHITE)) handlePruneAction();
-		
+
 		while (true) {
-//		    inputAction = new MoveAnnotation(scanner.nextLine());
-		    handleInputAction();
-		    handlePruneAction();
+			inputAction = new MoveAnnotation(scanner.nextLine());
+			handleInputAction();
+			handlePruneAction();
 		}
 	}
 }

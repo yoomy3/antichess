@@ -57,18 +57,15 @@ public class Board {
 		checkMate = anotherBoard.checkMate;
 	}
 
-	public Board(String color) throws Exception {
+	public Board(Color playerColor) throws Exception {
 		// decide which side I am playing
-		if (color.toLowerCase().equals("black")) {
-			player = Color.BLACK;
-		} else {
-			player = Color.WHITE;
-			isWhite = true;
-		}
+		player = playerColor;
 
 		// initialize 32 pieces
 		pieces = new Piece[8][8];
-		initPieces(pieces, player);
+		initPieces();
+
+		System.out.println("## Player" + player.toString() + " board initialized");
 
 		castling = Castling.NONE;
 	}
@@ -192,8 +189,9 @@ public class Board {
 			}
 		}
 
-		// must move King?
+		// protect the King!
 		if (checked) {
+			// move the King
 			for (int r=0; r<8; r++) {
 				for (int c=0; c<8; c++) {
 					if(pieces[r][c] != null && pieces[r][c].getPlayer().equals(player) && pieces[r][c] instanceof KingPiece) {
@@ -201,6 +199,8 @@ public class Board {
 					}
 				}
 			}
+			// TODO: block the attack with other pieces
+
 			// we lost..
 			if (possibleMoves.isEmpty()) {
 				checkMate = true;
