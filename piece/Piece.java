@@ -27,9 +27,11 @@ public class Piece {
 
 	// copy constructor
 	public Piece(Piece copy) {
-		this(copy.getRow(), copy.getCol(), copy.getPlayer());
+		row = copy.getRow();
+		col = copy.getCol();
 		rank = 8-copy.getRow();
 		file = copy.getCol();
+		player = copy.getPlayer();
 		moved = copy.hasEverMoved();
 	}
 
@@ -80,7 +82,6 @@ public class Piece {
 	protected boolean isValidPoint(Point point) {
 		int r = getRow(point);
 		int c = getCol(point);
-		// System.out.println("r: " + r + " c: " + c);
 		return (0 <= r) && (r <= 7) && (0 <= c) && (c <= 7);
 	}
 
@@ -92,13 +93,13 @@ public class Piece {
 	protected MoveAnnotation toMoveAnnotation(int r, int c) throws Exception {
 		char f, f2;
 		try {
-			f = (char)('a' + file);
+			f = (char)('a' + col);
 			f2 = (char)('a' + c);
 		} catch (Exception e) {
 			throw new Exception("index to moveString conversion error");
 		}
 
-		String moveString = String.valueOf(f) + Integer.toString(8 - rank) + String.valueOf(f2) + Integer.toString(8 - r);
+		String moveString = String.valueOf(f) + Integer.toString(8 - row) + String.valueOf(f2) + Integer.toString(8 - r);
 
 		return new MoveAnnotation(moveString);
 	}
