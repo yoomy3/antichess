@@ -20,6 +20,31 @@ public class KingPiece extends Piece {
 	public ArrayList<MoveAnnotation> getPossibleMoves(Piece[][] board) throws Exception {
 		ArrayList<MoveAnnotation> possibleMoves = new ArrayList<MoveAnnotation>();
 
+		// check 8 cells around the King
+		// landing cell must not be attacked by any other opponent piece
+		int r = 0;
+		for (int i = 0; i < 3; i++) {
+			if (i == 0) {
+				r = row - 1;
+			} else if (i == 1) {
+				r = row;
+			} else {
+				r = row + 1;
+			}
+
+			for (int c = col-1; c <= col+1; c++) {
+				if (r == row && c == col) {
+					continue;
+				}
+
+				if (isValidPoint(r, c) &&
+					!isCellUnderAttack(r, c, board) &&
+					(board[r][c] == null || (board[r][c] != null && !board[r][c].getPlayer().equals(player)))) {
+					possibleMoves.add(toMoveAnnotation(r, c));
+				}
+			}
+		}
+
 		return possibleMoves;
 	}
 
@@ -27,6 +52,31 @@ public class KingPiece extends Piece {
 	// returns a set of moves to capture the opponent's piece only
 	public ArrayList<MoveAnnotation> getAttackMoves(Piece[][] board) throws Exception {
 		ArrayList<MoveAnnotation> attackMoves = new ArrayList<MoveAnnotation>();
+		
+		// check 8 cells around the King
+		// landing cell must not be attacked by any other opponent piece
+		int r = 0;
+		for (int i = 0; i < 3; i++) {
+			if (i == 0) {
+				r = row - 1;
+			} else if (i == 1) {
+				r = row;
+			} else {
+				r = row + 1;
+			}
+
+			for (int c = col-1; c <= col+1; c++) {
+				if (r == row && c == col) {
+					continue;
+				}
+
+				if (isValidPoint(r, c) &&
+					!isCellUnderAttack(r, c, board) &&
+					board[r][c] != null && !board[r][c].getPlayer().equals(player)) {
+					attackMoves.add(toMoveAnnotation(r, c));
+				}
+			}
+		}
 
 		return attackMoves;
 	}
