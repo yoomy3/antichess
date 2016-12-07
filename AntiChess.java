@@ -11,7 +11,7 @@ public class AntiChess {
 	private static int whiteSeconds, blackSeconds;
 	private static TimerTask whiteTask, blackTask;
 	private static Color chosenPlayer, opponentPlayer;
-	private static int timerLimit = 180; // TODO: change to 3-min per side
+	private static int timerLimit = 180;
 	
 	// game and AI component
 	private static Scanner scanner = new Scanner(System.in);
@@ -36,7 +36,7 @@ public class AntiChess {
 			whiteTimer = new Timer();
 			whiteTask = new TimerTask() {
 				public void run() {
-					System.out.println("WHITE: " + (timerLimit - whiteSeconds) + "s left");
+					System.err.println("WHITE: " + (timerLimit - whiteSeconds) + "s left");
 					if (whiteSeconds >= timerLimit) getWinner(Color.BLACK);
 					whiteSeconds++;
 				}
@@ -45,7 +45,7 @@ public class AntiChess {
 			blackTimer = new Timer();
 			blackTask = new TimerTask() {
 				public void run() {
-					System.out.println("BLACK: " + (timerLimit - blackSeconds) + "s left");
+					System.err.println("BLACK: " + (timerLimit - blackSeconds) + "s left");
 					if (blackSeconds >= timerLimit) getWinner(Color.WHITE);
 					blackSeconds++;
 				}
@@ -85,14 +85,13 @@ public class AntiChess {
 		// turn for chosen player
 		resume(chosenPlayer);
 
-		// TODO: action for chosen player
+		// action for chosen player
 		board.printAllPossibleMoves(board.getPossibleMoves());
 		pruneAction = prune.getBestMove(board, board.getPossibleMoves());
-//		System.out.println(pruneAction.toString());
+		System.out.println(pruneAction.getMoveString()); // print out prune action
 		board.takeMove(pruneAction);
 		checkGameOver();
 
-		Thread.sleep(5000); // TODO: for demo, give 5 seconds per execution
 		pause(chosenPlayer);
 	}
 	
@@ -101,18 +100,24 @@ public class AntiChess {
 		// turn for opponent player
 		resume(opponentPlayer);
 		
-		// TODO: opponent action
+		// opponent action
+		board.printAllPossibleMoves(board.getPossibleMoves());
+		inputAction = new MoveAnnotation(scanner.nextLine());
 		board.takeMove(inputAction);
 		checkGameOver();
 		
-		Thread.sleep(5000); // TODO: for demo, give 5 seconds per execution
 		pause(opponentPlayer);
 	}
 	
 	// check whether game should be finished or not
 	private static void checkGameOver() {
 		if (board.isGameFinished()) {
-			getWinner(board.getWinner());
+			if (board.isDrawn()) {
+				System.out.println("1/2-1/2");
+				System.exit(0);
+			} else {
+				getWinner(board.getWinner());
+			}
 		}
 	}
 	
@@ -127,8 +132,7 @@ public class AntiChess {
 	}
 	public static void main(String arg[]) throws Exception {
 		// create instances
-		initGame(arg[0]); // TODO: read this from command line argument when finish
-//		initGame("White"); // TODO: read this from command line argument when finish
+		initGame(arg[0]);
 
 		board.printBoard();
 
@@ -136,7 +140,7 @@ public class AntiChess {
 		if (chosenPlayer.equals(Color.WHITE)) handlePruneAction();
 
 		while (true) {
-			inputAction = new MoveAnnotation(scanner.nextLine());
+			board.printBoard();
 			handleInputAction();
 			handlePruneAction();
 		}

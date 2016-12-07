@@ -22,7 +22,7 @@ import antiChess.piece.RookPiece;
  */
 public class Prune {
 	// alpha-beta pruning variables
-	static private int depth = 5;
+	static private int depth = 2;
 	
 	// material scores
 	static private int pawnPiece = 100;
@@ -110,12 +110,14 @@ public class Prune {
 
 	// Alpha-Beta pruning
 	MoveAnnotation getBestMove(Board board, ArrayList<MoveAnnotation> moves) throws Exception {
+		System.out.println("please wait");
 		int bestScore = Integer.MIN_VALUE, score;
 		MoveAnnotation bestMove = null;
-		
+
 		// run local BFS to traverse all child boards
 		for (MoveAnnotation move : board.getPossibleMoves()) {
-			Board childBoard = new Board(board).takeMove(move);;
+			Board childBoard = new Board(board);
+			childBoard.takeMove(move);
 			score = alphaBetaMin(childBoard, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
 			if (score > bestScore) {
 				bestScore = score;
@@ -149,7 +151,7 @@ public class Prune {
 		
 		// run local BFS to traverse all child boards
 		for (MoveAnnotation move : board.getPossibleMoves()) {
-			Board childBoard = new Board(board).takeMove(move);;
+			Board childBoard = new Board(board).takeMove(move);
 			score = alphaBetaMax(childBoard, alpha, beta, depthleft - 1);
 			if (score <= alpha)
 				return alpha; // fail hard alpha-cutoff
@@ -165,7 +167,7 @@ public class Prune {
 		if (isWhite) {
 			singleScore += positionScore[posX][posY];
 		} else {
-			singleScore += positionScore[8-posX][8-posY];
+			singleScore += positionScore[7-posX][7-posY];
 		}
 		return singleScore;
 	}
@@ -180,20 +182,36 @@ public class Prune {
 		for (int r=0; r<8; r++) {
 			for (int c=0; c<8; c++) {
 				Piece curPiece = pieces[r][c];
-				Color piecePlayer = curPiece.getPlayer();
-				if (piecePlayer == curPlayer) {
-					if (curPiece instanceof BishopPiece) {
-						score += evaluateSingleMaterialPosition(bishopPiece, bishopPosition, r, c, isWhite);
-					} else if (curPiece instanceof KingPiece) {
-						score += evaluateSingleMaterialPosition(kingPiece, kingPosition, r, c, isWhite);
-					} else if (curPiece instanceof KnightPiece) {
-						score += evaluateSingleMaterialPosition(knightPiece, knightPosition, r, c, isWhite);
-					} else if (curPiece instanceof PawnPiece) {
-						score += evaluateSingleMaterialPosition(pawnPiece, pawnPosition, r, c, isWhite);
-					} else if (curPiece instanceof QueenPiece) {
-						score += evaluateSingleMaterialPosition(queenPiece, queenPosition, r, c, isWhite);
-					} else if (curPiece instanceof RookPiece) {
-						score += evaluateSingleMaterialPosition(rookPiece, rookPosition, r, c, isWhite);
+				if (curPiece != null) {
+					Color piecePlayer = curPiece.getPlayer();
+					if (piecePlayer == curPlayer) {
+						if (curPiece instanceof BishopPiece) {
+							score += evaluateSingleMaterialPosition(bishopPiece, bishopPosition, r, c, isWhite);
+						} else if (curPiece instanceof KingPiece) {
+							score += evaluateSingleMaterialPosition(kingPiece, kingPosition, r, c, isWhite);
+						} else if (curPiece instanceof KnightPiece) {
+							score += evaluateSingleMaterialPosition(knightPiece, knightPosition, r, c, isWhite);
+						} else if (curPiece instanceof PawnPiece) {
+							score += evaluateSingleMaterialPosition(pawnPiece, pawnPosition, r, c, isWhite);
+						} else if (curPiece instanceof QueenPiece) {
+							score += evaluateSingleMaterialPosition(queenPiece, queenPosition, r, c, isWhite);
+						} else if (curPiece instanceof RookPiece) {
+							score += evaluateSingleMaterialPosition(rookPiece, rookPosition, r, c, isWhite);
+						}
+					} else {
+						if (curPiece instanceof BishopPiece) {
+							score -= evaluateSingleMaterialPosition(bishopPiece, bishopPosition, r, c, isWhite);
+						} else if (curPiece instanceof KingPiece) {
+							score -= evaluateSingleMaterialPosition(kingPiece, kingPosition, r, c, isWhite);
+						} else if (curPiece instanceof KnightPiece) {
+							score -= evaluateSingleMaterialPosition(knightPiece, knightPosition, r, c, isWhite);
+						} else if (curPiece instanceof PawnPiece) {
+							score -= evaluateSingleMaterialPosition(pawnPiece, pawnPosition, r, c, isWhite);
+						} else if (curPiece instanceof QueenPiece) {
+							score -= evaluateSingleMaterialPosition(queenPiece, queenPosition, r, c, isWhite);
+						} else if (curPiece instanceof RookPiece) {
+							score -= evaluateSingleMaterialPosition(rookPiece, rookPosition, r, c, isWhite);
+						}
 					}
 				}
 			}
@@ -259,7 +277,7 @@ public class Prune {
 	// evaluate the board score
 	int evaluate(Board board) throws Exception {
 		int score = 0;
-		
+
 		score += evaluateMaterialPosition(board);
 		score += evaluateMobility(board);
 		score += evaluatePattern(board);

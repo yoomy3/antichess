@@ -18,6 +18,7 @@ public class Board {
 	
 	boolean enPassant;
 	boolean gameFinished; // set up game finished when finished
+	boolean isDrawn = false;
 
 	int fiftyMoveCount;
 
@@ -28,8 +29,21 @@ public class Board {
 	boolean checkMate;
 
 	// hashtable to keep all the states - check for threefold repetition
-	Hashtable<Integer, Integer> states = new Hashtable<Integer, Integer>();
+	Hashtable<Integer, Repetition> states = new Hashtable<Integer, Repetition>();
 
+	private class Repetition {
+		int count; // number of occurrences for the move
+		MoveAnnotation move; 
+		
+		Repetition(int count, MoveAnnotation move) {
+			this.count = count;
+			this.move = move;
+		}
+		
+		int getCount() {return count;}
+		MoveAnnotation getMove() {return move;}
+	}
+	
 	// King/Queen side castling
 	private enum Castling {
 		NONE, KING, QUEEN
@@ -40,8 +54,21 @@ public class Board {
 		pieces = new Piece[8][8];
 		for (int r=0; r<8; r++) {
 			for (int c=0; c<8; c++) {
-				if (anotherBoard.pieces[r][c] != null) {
-					pieces[r][c] = new Piece(anotherBoard.pieces[r][c]);
+				Piece piece = anotherBoard.pieces[r][c];
+				if (piece != null) {
+					if (piece instanceof PawnPiece) {
+						pieces[r][c] = new PawnPiece(piece);
+					} else if (piece instanceof BishopPiece) {
+						pieces[r][c] = new BishopPiece(piece);
+					} else if (piece instanceof KingPiece) {
+						pieces[r][c] = new KingPiece(piece);
+					} else if (piece instanceof KnightPiece) {
+						pieces[r][c] = new KnightPiece(piece);
+					} else if (piece instanceof QueenPiece) {
+						pieces[r][c] = new QueenPiece(piece);
+					} else if (piece instanceof RookPiece) {
+						pieces[r][c] = new RookPiece(piece);
+					}
 				}
 			}
 		}
@@ -55,6 +82,7 @@ public class Board {
 		isCastled = anotherBoard.isCastled;
 		checked = anotherBoard.checked;
 		checkMate = anotherBoard.checkMate;
+		states = anotherBoard.states;
 	}
 
 	public Board(Color playerColor) throws Exception {
@@ -65,7 +93,7 @@ public class Board {
 		pieces = new Piece[8][8];
 		initPieces();
 
-		System.out.println("## Player" + player.toString() + " board initialized");
+		System.err.println("## Player" + player.toString() + " board initialized");
 
 		castling = Castling.NONE;
 	}
@@ -88,6 +116,7 @@ public class Board {
 
 	public boolean isGameFinished() { return gameFinished; }
 
+	public boolean isDrawn() { return isDrawn; }
 
 	///////////////////////////////////
 	//        Public Helpers         //
@@ -95,6 +124,12 @@ public class Board {
 
 	// make a move, update the board
 	public Board takeMove(MoveAnnotation move) throws Exception {
+		if (move.getClaimDraw()) {
+			this.gameFinished = true;
+			this.isDrawn = true;
+			return this;
+		}
+		
 		Point fromPoint = move.getFromPoint();
 		Point toPoint = move.getToPoint();
 
@@ -148,13 +183,14 @@ public class Board {
 		// add state hash
 		int stateHash = getBoardHash();
 		if (states.containsKey(stateHash)) {
-			int c = states.get(stateHash);
+			int c = states.get(stateHash).getCount();
 			c += 1;
-			states.put(stateHash, c);
+			states.put(stateHash, new Repetition(c, move));
 		} else {
-			states.put(stateHash, 1);
+			states.put(stateHash, new Repetition(1, move));
 		}
 
+		checkGameOver();
 		return this;
 	}
 		
@@ -261,8 +297,10 @@ public class Board {
 				// * threefold repetition
 				Set<Integer> keys = states.keySet();
 				for (int key: keys){
-					if (states.get(key) >= 3) {
-						possibleMoves.add(new MoveAnnotation("1/2-1/2"));
+					Repetition repetition = states.get(key);
+					MoveAnnotation possibleMove = repetition.getMove();
+					if ((repetition.getCount() >= 3) && (possibleMoves.contains(possibleMove))) {
+						possibleMoves.add(new MoveAnnotation(repetition.getMove().getMoveString() + ",1/2-1/2"));
 					}
 				}
 			}
@@ -273,9 +311,9 @@ public class Board {
 	}
 	
 	public void printBoard() {
-		System.out.println("     a   b   c   d   e   f   g   h  ");
+		System.err.println("     a   b   c   d   e   f   g   h  ");
 		for (int r=0; r<8; r++) {
-			System.out.println("   ---------------------------------");
+			System.err.println("   ---------------------------------");
 			String s = (8 - r) + "  | ";
 			for (int c=0; c<8; c++) {
 				if (pieces[r][c] == null) {
@@ -285,17 +323,19 @@ public class Board {
 				}
 			}
 			s += " " + (8 - r);
-			System.out.println(s);
+			System.err.println(s);
 		}
-		System.out.println("   ---------------------------------");
-		System.out.println("     a   b   c   d   e   f   g   h  ");
+		System.err.println("   ---------------------------------");
+		System.err.println("     a   b   c   d   e   f   g   h  ");
 	}
 
 	public void printAllPossibleMoves(ArrayList<MoveAnnotation> possibleMoves) {
+		String moves = "All possible moves: ";
 		for (MoveAnnotation move : possibleMoves) {
-			System.out.println(move.getMoveString());
+			moves += " ," + move.getMoveString();
 		}
-		System.out.println("## " + possibleMoves.size() + " total possible moves");
+		System.err.println(moves);
+		System.err.println("## " + possibleMoves.size() + " total possible moves");
 	}
 
 	// is (row, col) cell is being attacked by any opponent piece?
@@ -321,7 +361,34 @@ public class Board {
 	///////////////////////////////////
 	//        Private Helpers        //
 	///////////////////////////////////
-
+	
+	// check whether the game is finished or not
+	private void checkGameOver() {
+		boolean whiteKing = false;
+		boolean blackKing = false;
+		for (int r = 0; r < 8; r++) {
+			for (int c = 0; c < 8; c++) {
+				Piece piece = pieces[r][c];
+				if (piece != null) {
+					if(piece instanceof KingPiece) {
+						if (piece.getPlayer().equals(Color.WHITE)) {
+							whiteKing = true;
+						} else {
+							blackKing = true;
+						}
+					}
+				}
+			}
+		}
+		if (!whiteKing) {
+			gameFinished = true;
+			winner = Color.BLACK;
+		} else if (!blackKing) {
+			gameFinished = true;
+			winner = Color.WHITE;
+		}
+	}
+	
 	// get the hash value of the current state
 	private int getBoardHash() {
 		String res = "";
@@ -344,7 +411,6 @@ public class Board {
 		Color player = Color.BLACK;
 
 		for (int i = 0; i < 2; i++) {
-		System.out.println("i:" + i);
 			if (i == 1) {
 				r = 7;
 				offset = -1;
