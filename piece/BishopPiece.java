@@ -17,8 +17,8 @@ public class BishopPiece extends Piece{
 	@Override
 	// returns a set of moves to empty cell or to capture the opponent's piece
 	public ArrayList<MoveAnnotation> getPossibleMoves(Piece[][] board) throws Exception {
-		ArrayList<MoveAnnotation> possibleMoves = new ArrayList<MoveAnnotation>()
-		int r, c, rOffset, cOffset;
+		ArrayList<MoveAnnotation> possibleMoves = new ArrayList<MoveAnnotation>();
+		int r, c, rOffset = 0, cOffset = 0;
 
 		// look for 4 diagonal directions
 		for (int i = 0; i < 4; i++) {
@@ -48,9 +48,9 @@ public class BishopPiece extends Piece{
 			c += cOffset;
 			while (isValidPoint(r, c)) {
 				// open path && (no piece || opponent piece)
-				if (isOpenPath(row, col, r, c) &&
+				if (isOpenPath(row, col, r, c, board) &&
 					(board[r][c] == null ||
-					(board[r][c] != null && !board[r][c].getPlayer.equals(player))) {
+					(board[r][c] != null && !board[r][c].getPlayer().equals(player)))) {
 					possibleMoves.add(toMoveAnnotation(r, c));
 				}
 
@@ -65,8 +65,8 @@ public class BishopPiece extends Piece{
 		@Override
 	// returns a set of moves to capture the opponent's piece only
 	public ArrayList<MoveAnnotation> getAttackMoves(Piece[][] board) throws Exception {
-		ArrayList<MoveAnnotation> attackMoves = new ArrayList<MoveAnnotation>()
-		int r, c, rOffset, cOffset;
+		ArrayList<MoveAnnotation> attackMoves = new ArrayList<MoveAnnotation>();
+		int r, c, rOffset = 0, cOffset = 0;
 
 		// look for 4 diagonal directions
 		for (int i = 0; i < 4; i++) {
@@ -96,8 +96,8 @@ public class BishopPiece extends Piece{
 			c += cOffset;
 			while (isValidPoint(r, c)) {
 				// open path && opponent piece
-				if (isOpenPath(row, col, r, c) &&
-					board[r][c] != null && !board[r][c].getPlayer.equals(player)) {
+				if (isOpenPath(row, col, r, c, board) &&
+					board[r][c] != null && !board[r][c].getPlayer().equals(player)) {
 					attackMoves.add(toMoveAnnotation(r, c));
 				}
 

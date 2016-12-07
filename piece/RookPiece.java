@@ -22,7 +22,7 @@ public class RookPiece extends Piece {
 		for (int r = 0; r < 8; r++) {
 			if (board[r][col] == null ||
 			(board[r][col] != null && !board[r][col].getPlayer().equals(player)) &&
-			isOpenPath(row, col, r, col)) {
+			isOpenPath(row, col, r, col, board)) {
 				possibleMoves.add(toMoveAnnotation(r, col));
 			}
 		}
@@ -30,7 +30,7 @@ public class RookPiece extends Piece {
 		for (int c = 0; c < 8; c++) {
 			if (board[row][c] == null ||
 			(board[row][c] != null && !board[row][c].getPlayer().equals(player)) &&
-			isOpenPath(row, col, row, c)) {
+			isOpenPath(row, col, row, c, board)) {
 				possibleMoves.add(toMoveAnnotation(row, c));
 			}
 		}
@@ -46,7 +46,7 @@ public class RookPiece extends Piece {
 		for (int r = 0; r < 8; r++) {
 			if (board[r][col] != null &&
 				!board[r][col].getPlayer().equals(player) &&
-				isOpenPath(row, col, r, col)) {
+				isOpenPath(row, col, r, col, board)) {
 				attackMoves.add(toMoveAnnotation(r, col));
 			}
 		}
@@ -54,7 +54,7 @@ public class RookPiece extends Piece {
 		for (int c = 0; c < 8; c++) {
 			if (board[row][c] != null &&
 				!board[row][c].getPlayer().equals(player) &&
-				isOpenPath(row, col, row, c)) {
+				isOpenPath(row, col, row, c, board)) {
 				attackMoves.add(toMoveAnnotation(row, c));
 			}
 		}
