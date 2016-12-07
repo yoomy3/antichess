@@ -150,12 +150,7 @@ public class Board {
 			for (int c=0; c<8; c++) {
 				Piece piece = pieces[r][c];
 				if(piece != null && !piece.getPlayer().equals(player)) {
-					ArrayList<MoveAnnotation> possibleAttack = piece.getPossibleMoves();
-					for (MoveAnnotation attackMove : possibleAttack) {
-						if (pieces[getRow(attackMove.getToPoint())][getCol(attackMove.getToPoint())] != null) {
-							possibleAttacks.add(attackMove);
-						}
-					}
+					possibleAttacks.addAll(piece.getAttackMoves(pieces));
 				}
 			}
 		}
@@ -173,7 +168,7 @@ public class Board {
 				for (int c=0; c<8; c++) {
 					Piece piece = pieces[r][c];
 					if(piece != null && piece.getPlayer().equals(player) && piece instanceof KingPiece) {
-						possibleMoves.addAll(piece.getPossibleMoves());
+						possibleMoves.addAll(piece.getPossibleMoves(pieces));
 					}
 				}
 			}
@@ -194,7 +189,7 @@ public class Board {
 				for (int c=0; c<8; c++) {
 					Piece piece = pieces[r][c];
 					if(piece != null && piece.getPlayer().equals(player)) {
-						ArrayList<MoveAnnotation> curMoves = piece.getPossibleMoves();
+						ArrayList<MoveAnnotation> curMoves = piece.getPossibleMoves(pieces);
 						possibleMoves.addAll(curMoves);
 					}
 				}

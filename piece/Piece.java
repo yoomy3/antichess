@@ -1,6 +1,7 @@
 package antiChess.piece;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.util.ArrayList;
 
 import antiChess.MoveAnnotation;
@@ -34,7 +35,13 @@ public class Piece {
 
 	// empty base function
 	// returns a set of moves to empty cell or to capture the opponent's piece
-	public ArrayList<MoveAnnotation> getPossibleMoves() {
+	public ArrayList<MoveAnnotation> getPossibleMoves(Piece[][] board) {
+		return new ArrayList<MoveAnnotation>();
+	}
+
+	// empty base function
+	// returns a set of moves to capture the opponent's piece only
+	public ArrayList<MoveAnnotation> getAttackMoves(Piece[][] board) {
 		return new ArrayList<MoveAnnotation>();
 	}
 
@@ -68,8 +75,19 @@ public class Piece {
 	}
 
 	// we have [8][8] board
-	protected boolean isValidPoint(int pointX, int pointY) {
-		System.out.println("x: " + pointX + " y: " + pointY);
-		return (0 <= pointX) && (pointX <= 8) && (0 <= pointY) && (pointY <= 8);
-	}	
+	// *NOTE: this checks the index pair
+	protected boolean isValidPoint(Point point) {
+		int row = getRow(point);
+		int col = getCol(point);
+		// System.out.println("row: " + row + " col: " + col);
+		return (0 <= row) && (row <= 7) && (0 <= col) && (col <= 7);
+	}
+
+	protected int getCol(Point point) {
+		return point.x;
+	}
+
+	protected int getRow(Point point) {
+		return point.y;
+	}
 }

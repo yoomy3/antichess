@@ -27,6 +27,7 @@ public class MoveAnnotation {
 	}
 	
 	// get from point
+	// *NOTE: Point represents an index pair
 	private void getFromPoint(String move) throws Exception {
 		int fromCol = move.charAt(0) - 'a';
 		int fromRow = move.charAt(1) - '0';
@@ -40,6 +41,7 @@ public class MoveAnnotation {
 	}
 
 	// get to point
+	// *NOTE: Point represents an index pair
 	private void getToPoint(String move) throws Exception {
 		int toCol = move.charAt(2) - 'a';
 		int toRow = move.charAt(3) - '0';

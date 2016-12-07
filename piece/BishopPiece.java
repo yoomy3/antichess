@@ -16,8 +16,14 @@ public class BishopPiece extends Piece{
 
 	@Override
 	// returns a set of moves to empty cell or to capture the opponent's piece
-	public ArrayList<MoveAnnotation> getPossibleMoves() {
+	public ArrayList<MoveAnnotation> getPossibleMoves(Piece[][] board) {
 		// TODO: write this
+		return new ArrayList<MoveAnnotation>();
+	}
+
+		@Override
+	// returns a set of moves to capture the opponent's piece only
+	public ArrayList<MoveAnnotation> getAttackMoves(Piece[][] board) {
 		return new ArrayList<MoveAnnotation>();
 	}
 
