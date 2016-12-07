@@ -29,6 +29,11 @@ public class PawnPiece extends Piece {
 		if (isValidPoint(row + offset, col) &&
 			board[row + offset][col] == null) {
 			possibleMoves.add(toMoveAnnotation(row + offset, col));
+			
+			// Pawn can proceed 2 cells if it hasn't been moved yet
+			if (!moved) {
+				possibleMoves.add(toMoveAnnotation(row + 2*offset, col));
+			}
 		}
 		if (isValidPoint(row + offset, col + offset) &&
 			board[row + offset][col + offset] != null &&
