@@ -93,8 +93,6 @@ public class Board {
 		pieces = new Piece[8][8];
 		initPieces();
 
-		System.err.println("## Player" + player.toString() + " board initialized");
-
 		castling = Castling.NONE;
 	}
 
@@ -193,8 +191,8 @@ public class Board {
 		checkGameOver();
 		return this;
 	}
-		
 
+	// get all possible attacks from the opponent
 	public ArrayList<MoveAnnotation> getPossibleAttackMoves() throws Exception {
 		ArrayList<MoveAnnotation> possibleAttacks = new ArrayList<MoveAnnotation>();
 		for (int r=0; r<8; r++) {
@@ -214,9 +212,10 @@ public class Board {
 	public ArrayList<MoveAnnotation> getPossibleMoves() throws Exception {
 		ArrayList<MoveAnnotation> possibleMoves = new ArrayList<MoveAnnotation>();
 
-		// checked?
-		ArrayList<MoveAnnotation> possibleAttacks = getPossibleAttackMoves();
+		// is our King under attack??
+		checked = false;
 
+		ArrayList<MoveAnnotation> possibleAttacks = getPossibleAttackMoves();
 		for (MoveAnnotation move : possibleAttacks) {
 			Point capturePoint = move.getToPoint();
 			if(pieces[getRow(capturePoint)][getCol(capturePoint)] instanceof KingPiece) {
@@ -290,7 +289,7 @@ public class Board {
 
 				// can we call a draw?
 				// * 50-move rule
-				if (fiftyMoveCount == 50) {
+				if (fiftyMoveCount >= 50) {
 					possibleMoves.add(new MoveAnnotation("1/2-1/2"));
 				} 
 
@@ -305,7 +304,6 @@ public class Board {
 				}
 			}
 		} // checked?
-
 
 		return possibleMoves;
 	}
@@ -332,7 +330,7 @@ public class Board {
 	public void printAllPossibleMoves(ArrayList<MoveAnnotation> possibleMoves) {
 		String moves = "All possible moves: ";
 		for (MoveAnnotation move : possibleMoves) {
-			moves += " ," + move.getMoveString();
+			moves += move.getMoveString() + ", ";
 		}
 		System.err.println(moves);
 		System.err.println("## " + possibleMoves.size() + " total possible moves");

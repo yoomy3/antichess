@@ -100,10 +100,19 @@ public class AntiChess {
 		// turn for opponent player
 		resume(opponentPlayer);
 		
+		String input;
+		while (true) {
+			try {
+				input = scanner.nextLine();
+				inputAction = new MoveAnnotation(input);
+				break;
+			} catch (Exception e) {
+				System.err.println("## Input is not in a valid format. Please re-enter a valid next move.");
+			}
+		}
+
 		// opponent action
-		board.printAllPossibleMoves(board.getPossibleMoves());
-		inputAction = new MoveAnnotation(scanner.nextLine());
-		board.takeMove(inputAction);
+		board.takeMove(inputAction);	// *NOTE: we assume that the opponent's move is a proper, valid move.
 		checkGameOver();
 		
 		pause(opponentPlayer);
